@@ -1,95 +1,110 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BoardDebugController : MonoBehaviour
 {
-    [SerializeField] private BoardGenerator boardGenerator;
     [SerializeField] private PlayerPawn playerPawn;
-    [SerializeField] private int minRandomStep = 0;
-    [SerializeField] private int maxRandomStep = 10;
+    [SerializeField] private int selectedBranchIndex = 0;
 
     private void Start()
     {
         Debug.Log("=== Board Debug Controller ===");
-        Debug.Log("1 : 1칸 이동");
-        Debug.Log("3 : 3칸 이동");
-        Debug.Log("5 : 5칸 이동");
-        Debug.Log("Space : 랜덤 이동");
-        Debug.Log("B : 다음 칸에 BananaPeel 설치");
-        Debug.Log("F : 다음 칸에 FakeTrophy 설치");
-        Debug.Log("C : 다음 칸 함정 제거");
+        Debug.Log("1 / 3 / 5 : 이동");
+        Debug.Log("Q / W / E : 다음 분기 선택 (0 / 1 / 2)");
+        Debug.Log("B : 선택된 다음 노드에 BananaPeel 설치");
+        Debug.Log("F : 선택된 다음 노드에 FakeTrophy 설치");
+        Debug.Log("C : 선택된 다음 노드 함정 제거");
+        Debug.Log("I : 현재 노드 정보 출력");
     }
 
     private void Update()
     {
-        if (boardGenerator == null || playerPawn == null)
+        if (Keyboard.current == null || playerPawn == null || playerPawn.IsMoving)
             return;
 
-        if (playerPawn.IsMoving)
-            return;
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            playerPawn.MoveBySteps(1);
+            selectedBranchIndex = 0;
+            Debug.Log("[Debug] 다음 분기 선택 = 0");
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Keyboard.current.wKey.wasPressedThisFrame)
         {
-            playerPawn.MoveBySteps(3);
+            selectedBranchIndex = 1;
+            Debug.Log("[Debug] 다음 분기 선택 = 1");
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        if (Keyboard.current.eKey.wasPressedThisFrame)
         {
-            playerPawn.MoveBySteps(5);
+            selectedBranchIndex = 2;
+            Debug.Log("[Debug] 다음 분기 선택 = 2");
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
-            int randomStep = Random.Range(minRandomStep, maxRandomStep + 1);
-            Debug.Log($"[Debug] 랜덤 이동값 = {randomStep}");
-            playerPawn.MoveBySteps(randomStep);
+            playerPawn.MoveSteps(1, new List<int> { selectedBranchIndex });
         }
 
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
         {
-            InstallTrapOnNextNode(TrapType.BananaPeel);
+            playerPawn.MoveSteps(3, new List<int> { selectedBranchIndex });
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Keyboard.current.digit5Key.wasPressedThisFrame)
         {
-            InstallTrapOnNextNode(TrapType.FakeTrophy);
+            playerPawn.MoveSteps(5, new List<int> { selectedBranchIndex });
         }
 
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Keyboard.current.bKey.wasPressedThisFrame)
         {
-            ClearTrapOnNextNode();
+            BoardNode targetNode = GetSelectedNextNode();
+            if (targetNode != null)
+                targetNode.InstallTrap(TrapType.BananaPeel, playerPawn.PawnName);
+        }
+
+        if (Keyboard.current.fKey.wasPressedThisFrame)
+        {
+            BoardNode targetNode = GetSelectedNextNode();
+            if (targetNode != null)
+                targetNode.InstallTrap(TrapType.FakeTrophy, playerPawn.PawnName);
+        }
+
+        if (Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            BoardNode targetNode = GetSelectedNextNode();
+            if (targetNode != null)
+                targetNode.ClearTrap();
+        }
+
+        if (Keyboard.current.iKey.wasPressedThisFrame)
+        {
+            PrintCurrentNodeInfo();
         }
     }
 
-    private void InstallTrapOnNextNode(TrapType trapType)
+    private BoardNode GetSelectedNextNode()
     {
-        if (boardGenerator.NodeCount == 0)
-            return;
+        BoardNode currentNode = playerPawn.CurrentNode;
+        if (currentNode == null || currentNode.NextNodes == null || currentNode.NextNodes.Count == 0)
+        {
+            Debug.LogWarning("[Debug] 현재 노드에 연결된 다음 노드가 없습니다.");
+            return null;
+        }
 
-        int targetIndex = BoardMovementService.GetDestinationIndex(playerPawn.CurrentNodeIndex, 1, boardGenerator.NodeCount);
-        BoardNode targetNode = boardGenerator.GetNode(targetIndex);
-
-        if (targetNode == null)
-            return;
-
-        targetNode.InstallTrap(trapType, playerPawn.PawnName);
+        int clampedIndex = Mathf.Clamp(selectedBranchIndex, 0, currentNode.NextNodes.Count - 1);
+        return currentNode.NextNodes[clampedIndex];
     }
 
-    private void ClearTrapOnNextNode()
+    private void PrintCurrentNodeInfo()
     {
-        if (boardGenerator.NodeCount == 0)
+        BoardNode currentNode = playerPawn.CurrentNode;
+        if (currentNode == null)
+        {
+            Debug.LogWarning("[Debug] CurrentNode가 없습니다.");
             return;
+        }
 
-        int targetIndex = BoardMovementService.GetDestinationIndex(playerPawn.CurrentNodeIndex, 1, boardGenerator.NodeCount);
-        BoardNode targetNode = boardGenerator.GetNode(targetIndex);
-
-        if (targetNode == null)
-            return;
-
-        targetNode.ClearTrap();
+        Debug.Log($"[Debug] 현재 노드 = {currentNode.NodeId}, Type = {currentNode.NodeType}, NextCount = {currentNode.NextNodes.Count}");
     }
 }
