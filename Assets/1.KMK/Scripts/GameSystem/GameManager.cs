@@ -1,54 +1,47 @@
 using UnityEngine;
-using VInspector;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("매니저 연결 (인스펙터에서 드래그)")]
-    public TurnManager turnManager;
-    public TimerManager timerManager;
+    public static GameManager Instance { get; private set; }
 
-    public float baseTurnTime = 10f; // 기본 10초 턴
-
-    void Start()
+    private void Awake()
     {
-        // 게임 세팅
-        turnManager.InitGame();
-
-        // 첫 턴 시작
-        StartNewTurn();
+        if (Instance == null) Instance = this;
     }
 
     void Update()
-    {        
-        timerManager.TickTimer(Time.deltaTime);
+    {
+        if (NetworkGameManager.Instance == null ||
+                    NetworkGameManager.Instance.Object == null ||
+                    !NetworkGameManager.Instance.Object.IsValid)
+            return;
 
-        // 시간이 다 됐는지 확인
-        if (timerManager.IsTimeUp())
+        // UI 매니저가 아직 준비 안 됐으면 에러 방지용으로 대기
+        if (UIManager.Instance == null) return;
+
+        // 타이머는 실시간으로 화면에 줄어드는 걸 보여줘야 하므로 Update에서 처리
+        if (NetworkGameManager.Instance.TurnTimer.IsRunning)
         {
-            // 다음 순서
-            turnManager.NextTurn();
-
-            // 새로운 턴 타이머 다시 시작
-            StartNewTurn();
+            float remainTime = NetworkGameManager.Instance.TurnTimer.RemainingTime(NetworkGameManager.Instance.Runner) ?? 0f;
+            UIManager.Instance.TimerTextUpdated(remainTime);
         }
 
-        UIManager.Instance.OnTimerUpdated(timerManager.GetCurrentTime());        
-
     }
 
-    void StartNewTurn()
+    // 턴 텍스트는 NetworkGameManager가 "턴 바뀌었어!"라고 알려줄 때만 바꿉니다.
+    public void UpdateTurnUI(int currentPlayerNumber)
     {
-        Debug.Log($"{turnManager.GetCurrentPlayer() + 1}P 턴, {baseTurnTime}초 카운트다운 시작!");
-        UIManager.Instance.OnplayerTurnUpdated((turnManager.GetCurrentPlayer()+1).ToString());
-
-        timerManager.StartTimer(baseTurnTime);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.PlayerTurnTextUpdated(currentPlayerNumber.ToString());
+        }
     }
 
-    [Button]
-    // 테스트 함수 (카드 사용 시 10초 연장)
-    public void TestUseCardButton()
+    public void ShowMessage(string msg)
     {
-        Debug.Log("카드를 사용했습니다 (시간 초기화)");
-        timerManager.ResetTimer(baseTurnTime);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.InfoTextUpdated(msg);
+        }
     }
 }

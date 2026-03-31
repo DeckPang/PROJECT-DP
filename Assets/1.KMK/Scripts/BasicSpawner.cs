@@ -9,6 +9,10 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
     private NetworkRunner _runner;
     private int posY = 0;
+
+    [Header("스폰할 네트워크 매니저 프리팹을 여기에 넣으세요")]
+    public NetworkPrefabRef gameManagerPrefab;
+
     [Header("스폰할 플레이어 프리팹을 여기에 넣으세요")]
     public NetworkPrefabRef playerPrefab;
 
@@ -16,8 +20,6 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         _runner = gameObject.GetComponent<NetworkRunner>();
         _runner.ProvideInput = true;
-
-        // 퓨전 서버야, 무슨 일 생기면 이 스크립트(this)한테 알려줘! 라고 등록
         _runner.AddCallbacks(this);
 
         await StartSimulation();
@@ -39,14 +41,30 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     // 누군가 파티룸에 입장하면 자동으로 실행되는 핵심 함수
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        // 클라이언트가 맘대로 스폰하면 핵(해킹)이 발생함. 무조건 방장(서버)만 스폰 권한을 가짐
         if (runner.IsServer)
         {
-            Debug.Log($"플레이어 {player.PlayerId} 님을 맵에 소환합니다!");
-            Vector3 spawnPosition = new Vector3(0, posY++, 0); // 스폰 위치            
+            if (player == runner.LocalPlayer)
+            {
+                runner.Spawn(gameManagerPrefab, Vector3.zero, Quaternion.identity);
+                Debug.Log("서버가 NetworkGameManager를 성공적으로 스폰했습니다!");
+            }
 
-            // 유니티의 Instantiate 대신, 퓨전 전용 Spawn 함수를 사용해야 남들 화면에도 보임
+            Vector3 spawnPosition = new Vector3(0, posY++, 0);
             runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+
+            // [수정된 부분] NetworkGameManager가 네트워크 상에 완전히 준비(초기화)되었는지 확인!
+            if (NetworkGameManager.Instance != null &&
+                NetworkGameManager.Instance.Object != null &&
+                NetworkGameManager.Instance.Object.IsValid)
+            {
+                NetworkGameManager.Instance.RpcSendSystemMessage($"Player {player.PlayerId} has joined.");
+            }
+            else
+            {
+                // 방장이 처음 방을 만들고 입장하는 바로 그 찰나에는 매니저가 초기화 중일 수 있습니다.
+                // 이럴 때는 에러를 내지 않고 유니티 콘솔에만 조용히 기록을 남깁니다.
+                Debug.Log($"Player {player.PlayerId} has joined.");
+            }
         }
     }
 
@@ -56,14 +74,11 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         NetworkInputData data = new NetworkInputData();
 
-        // 1. 여기서 내 키보드 WASD 입력을 받아
-        float x = Input.GetAxisRaw("Horizontal"); // A, D (좌우)
-        float z = Input.GetAxisRaw("Vertical");   // W, S (상하)
-
-        // 2. 방향을 계산해서 택배 상자에 담고
+        float x = Input.GetAxisRaw("Horizontal"); 
+        float z = Input.GetAxisRaw("Vertical");   
+        
         data.direction = new Vector3(x, 0, z).normalized;
 
-        // 3. 서버로 택배 발송!
         input.Set(data);
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
