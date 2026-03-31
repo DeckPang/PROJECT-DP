@@ -7,6 +7,6 @@ public class TimerUI : MonoBehaviour
 
     public void UpdateTimerDisplay(float currentTime)
     {
-        timerText.text = currentTime.ToString("F0");
+        timerText.text = "Time remaining: " + currentTime.ToString("F0");
     }
 }

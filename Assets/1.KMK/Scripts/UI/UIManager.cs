@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     [Header("UI ¿¬°á")]
     public TimerUI timerUI;
     public PlayerTurnUI playerTurnUI;
+    public InfoUI infoUI;
 
     private void Awake()
     {
@@ -33,13 +34,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void OnTimerUpdated(float currentTime)
+    public void TimerTextUpdated(float currentTime)
     {
         timerUI.UpdateTimerDisplay(currentTime);
     }
 
-    public void OnplayerTurnUpdated(string playerName)
+    public void PlayerTurnTextUpdated(string playerName)
     {
         playerTurnUI.UpdatePlayerTurnDisplay(playerName);
+    }
+
+    public void InfoTextUpdated(string content)
+    {
+        infoUI.UpdateInfoText(content);
     }
 }
