@@ -9,9 +9,13 @@ public class Bullet : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // 생성된 순간 앞으로 발사
-        rb.AddForce(transform.forward * speed, ForceMode.Impulse);
+        rb.linearVelocity = transform.forward * speed;
 
         Destroy(gameObject, 2.5f);
+    }
+
+    public void Reflect(Vector3 dir)
+    {
+        rb.linearVelocity = dir.normalized * speed;
     }
 }

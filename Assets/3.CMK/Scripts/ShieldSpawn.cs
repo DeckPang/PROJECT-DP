@@ -1,14 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class Shield : MonoBehaviour
+public class ShieldSpawn : MonoBehaviour
 {
+    [Header("Shield CoolTime")]
     public float CoolDown = 3.5f;
     public float SkillTime;
 
+    [Header("Shield Object")]
     public GameObject shield_obj;
-    public bool reflect = false;
 
+    private bool reflect = false;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
