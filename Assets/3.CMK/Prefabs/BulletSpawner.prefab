@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7059937834706544447}
   - component: {fileID: 9052037298632524536}
   - component: {fileID: 3513907928438087260}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BulletSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
