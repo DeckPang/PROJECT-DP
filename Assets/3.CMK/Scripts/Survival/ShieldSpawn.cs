@@ -3,9 +3,7 @@ using UnityEngine;
 
 public class ShieldSpawn : MonoBehaviour
 {
-    [Header("Shield CoolTime")]
-    public float CoolDown = 3.5f;
-    public float SkillTime;
+    public ShieldData data;
 
     [Header("Shield Object")]
     public GameObject shield_obj;
@@ -15,7 +13,7 @@ public class ShieldSpawn : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        SkillTime = 0.0f;
+        data.SkillTime = 0.0f;
         shield_obj.SetActive(false);
     }
 
@@ -28,13 +26,13 @@ public class ShieldSpawn : MonoBehaviour
             StartCoroutine(ShieldRoutine());
 
             reflect = false;
-            SkillTime = 0.0f;
+            data.SkillTime = 0.0f;
         }
 
-        if (reflect == false && SkillTime < CoolDown)
+        if (reflect == false && data.SkillTime < data.CoolDown)
         {
-            SkillTime += Time.deltaTime;
-            if (SkillTime > CoolDown)
+            data.SkillTime += Time.deltaTime;
+            if (data.SkillTime > data.CoolDown)
             {
                 reflect = true;
             }
@@ -50,3 +48,4 @@ public class ShieldSpawn : MonoBehaviour
     }
 
 }
+ 

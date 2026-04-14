@@ -153,10 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16a679d1c7bf4424daf15d2106771778, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  moveRange: 10
-  rotateSpeed: 10
-  stopDistance: 0.5
+  data: {fileID: 11400000, guid: 2601159d8d6fe80408afdeb5a15c0a65, type: 2}
 --- !u!54 &653567930
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -288,8 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a2b8acd7ea9df14ca109e23d50e9073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CoolDown: 4.5
-  SkillTime: 0
+  data: {fileID: 11400000, guid: bc59efe75c6af90469b4113182c398fc, type: 2}
   shield_obj: {fileID: 1393956928}
 --- !u!1 &661656987
 GameObject:
@@ -444,8 +440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerPrefab: {fileID: 4008563337001877423, guid: 1149b38785b6fd540ac4af8b4d5f7612, type: 3}
-  radius: 10
-  minDistance: 2
+  data: {fileID: 11400000, guid: 7d096a71be2e4e84e910c90643060cda, type: 2}
 --- !u!1 &932065687
 GameObject:
   m_ObjectHideFlags: 0

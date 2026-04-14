@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class BulletSpawner : MonoBehaviour
 {
-    public float life_time = 2.0f; // 2초 후 삭제
-
+    public SpawnData data;
     public GameObject bullet;     
 
     [Header("생성 주기")]
@@ -28,12 +27,12 @@ public class BulletSpawner : MonoBehaviour
         }
 
         //  총알 생성 (Spawner 방향 그대로 사용)
-        if (spawn_time >= current_time && count == 0)
+        if (spawn_time >= data.bulletSpawnDelay && count == 0)
         {
             Instantiate(bullet, transform.position, transform.rotation);
             count++;
         }
 
-        Destroy(gameObject, life_time);
+        Destroy(gameObject, data.spawnerLifeTime);
     }
 }

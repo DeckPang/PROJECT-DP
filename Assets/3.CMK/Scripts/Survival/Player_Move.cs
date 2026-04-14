@@ -2,14 +2,8 @@ using UnityEngine;
 
 public class Player_Move : MonoBehaviour
 {
-    [Header("Move")]
-    public float speed = 2.0f;
-    public int moveRange = 10;
-
-    [Header("Look Rotate")]
-    public float rotateSpeed = 10f;
-    public float stopDistance = 0.5f;
-
+    public PlayerData data;
+   
     private bool gameOver;
     private Rigidbody rb;
 
@@ -35,12 +29,15 @@ public class Player_Move : MonoBehaviour
         if (collision.collider.CompareTag("Bullet"))
         {
             gameOver = true;
+
             Vector3 dir = transform.position - collision.transform.position;
             dir = dir.normalized;
 
-            dir.y = 0.5f;
-            float force = 30f;
-            rb.AddForce(dir * force, ForceMode.Impulse);
+            // 위쪽 힘 적용
+            dir.y = data.knockbackUpForce;
+
+            // 데이터에서 값 가져오기
+            rb.AddForce(dir * data.knockbackForce, ForceMode.Impulse);
         }
     }
 
@@ -51,16 +48,16 @@ public class Player_Move : MonoBehaviour
 
         Vector3 pos = transform.position; // 현재 위치
 
-        if (pos.magnitude > moveRange) // 원점으로부터 moveRange를 넘었을 때
+        if (pos.magnitude > data.moveRange) // 원점으로부터 moveRange를 넘었을 때
         {
-            transform.position = pos.normalized * moveRange;
+            transform.position = pos.normalized * data.moveRange;
         }
 
 
         // 월드 좌표 기준 이동
         Vector3 move = new Vector3(h, 0, v);
 
-        rb.MovePosition(rb.position + move * speed * Time.deltaTime);
+        rb.MovePosition(rb.position + move * data.speed * Time.deltaTime);
     }
 
     void Look()
@@ -76,7 +73,7 @@ public class Player_Move : MonoBehaviour
             direction.y = 0f;
 
             // 너무 가까우면 회전 안함
-            if (direction.sqrMagnitude < stopDistance * stopDistance)
+            if (direction.sqrMagnitude < data.stopDistance * data.stopDistance)
                 return;
 
             Quaternion targetRot = Quaternion.LookRotation(direction);
@@ -85,7 +82,7 @@ public class Player_Move : MonoBehaviour
             transform.rotation = Quaternion.Lerp(
                 transform.rotation,
                 targetRot,
-                rotateSpeed * Time.deltaTime
+                data.rotateSpeed * Time.deltaTime
             );
         }
     }

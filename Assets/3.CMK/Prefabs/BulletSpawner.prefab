@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb92ee60fc7ec794b997bcd40378b412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  life_time: 2
+  data: {fileID: 11400000, guid: 7d096a71be2e4e84e910c90643060cda, type: 2}
   bullet: {fileID: 443573616918012939, guid: eb22c500b9e76344fb376027eba84755, type: 3}
   spawn_time: 0
   current_time: 1.5
