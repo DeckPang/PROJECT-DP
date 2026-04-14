@@ -17,6 +17,7 @@ MonoBehaviour:
   description: "\uAE30\uBCF8 \uC774\uB3D9 \uCE74\uB4DC. 0~10\uCE78 \uB79C\uB364\uC73C\uB85C
     \uC774\uB3D9\uD569\uB2C8\uB2E4."
   cardType: 0
+  cardPoolType: 2
   cost: 0
   effectType: 1
   value: 10
