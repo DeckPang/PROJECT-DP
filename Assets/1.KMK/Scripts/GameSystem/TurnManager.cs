@@ -1,29 +1,61 @@
+using System;
+using Fusion;
 using UnityEngine;
 
-public class TurnManager : MonoBehaviour
+/// <summary>
+/// í”Œë ˆì´ì–´ í„´ ìˆœì„œë¥¼ ê´€ë¦¬í•©ë‹ˆë‹¤. Host(StateAuthority)ê°€ ìƒíƒœë¥¼ ì œì–´í•©ë‹ˆë‹¤.
+/// </summary>
+public class TurnManager : NetworkBehaviour
 {
-    public int totalPlayers = 4;
-    public int currentPlayerIndex = 0; // 0=1P, 1=2P, 2=3P, 3=4P
+    public static TurnManager Instance { get; private set; }
 
-    // °ÔÀÓ ¸Ç Ã³À½ ½ÃÀÛÇÒ ¶§ ÃÊ±âÈ­
-    public void InitGame()
+    public static event Action<int> OnTurnUpdated;
+
+    [Networked, OnChangedRender(nameof(OnTurnChanged))]
+    public int CurrentPlayerIndex { get; private set; }
+
+    [Networked]
+    public int PlayerCount { get; private set; }
+
+    [Networked]
+    public NetworkBool IsGameRunning { get; private set; }
+
+    public override void Spawned()
     {
-        currentPlayerIndex = 0;
-        Debug.Log("--- Game Start ---");
+        Instance = this;
+
+        // í´ë¼ì´ì–¸íŠ¸ê°€ ëŠ¦ê²Œ ì ‘ì†í–ˆì„ ë•Œ í˜„ì¬ ìƒíƒœë¥¼ UIì— ë°˜ì˜
+        if (IsGameRunning)
+            OnTurnUpdated?.Invoke(CurrentPlayerIndex + 1);
     }
 
-    // ´ÙÀ½ ÅÏÀ¸·Î ³Ñ±â±â
+    /// <summary>ê²Œì„ ì‹œì‘ ì‹œ Hostê°€ í˜¸ì¶œí•©ë‹ˆë‹¤.</summary>
+    public void StartGame(int playerCount)
+    {
+        if (!HasStateAuthority) return;
+
+        PlayerCount = playerCount;
+        CurrentPlayerIndex = 0;
+        IsGameRunning = true;
+
+        // ì´ˆê¸°ê°’(0)ì€ OnChangedRenderê°€ ì•ˆ ë¶ˆë¦¬ë¯€ë¡œ ì§ì ‘ ë°œìƒ
+        OnTurnUpdated?.Invoke(CurrentPlayerIndex + 1);
+        TimerManager.Instance?.StartTimer();
+    }
+
+    /// <summary>í„´ì„ ë‹¤ìŒ í”Œë ˆì´ì–´ë¡œ ë„˜ê¹ë‹ˆë‹¤.</summary>
     public void NextTurn()
     {
-        currentPlayerIndex = (currentPlayerIndex + 1) % totalPlayers;
-        Debug.Log($"\n[ {currentPlayerIndex + 1}P ÀÇ ÅÏ ½ÃÀÛ! ]");
+        if (!HasStateAuthority) return;
+        if (!IsGameRunning) return;
 
-        // TODO: ³ªÁß¿¡ ¿©±â¿¡ ÀÌº¥Æ® Ãß°¡ÇÏ±â
+        CurrentPlayerIndex = (CurrentPlayerIndex + 1) % PlayerCount;
+        TimerManager.Instance?.StartTimer();
     }
 
-    // Áö±İ ´©±¸ ÅÏÀÎÁö ¾Ë·ÁÁÖ´Â ÇÔ¼ö
-    public int GetCurrentPlayer()
+    // CurrentPlayerIndex ë³€ê²½ ì‹œ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ì„œ ì‹¤í–‰
+    private void OnTurnChanged()
     {
-        return currentPlayerIndex;
+        OnTurnUpdated?.Invoke(CurrentPlayerIndex + 1);
     }
 }
