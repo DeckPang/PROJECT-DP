@@ -1,56 +1,73 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class SpawnerManager : MonoBehaviour
 {
     public GameObject spawnerPrefab;
     public SpawnData data;
+    public GameTimer timer; //  여기서 시간 가져옴
 
     private float spawnInterval;
-    private int SpawnCount;     // BulletSpawner 개수
+    private float timerLocal = 0f;
 
-    private float timer = 0f;
+    void Start()
+    {
+        spawnInterval = Random.Range(data.minSpawnInterval, data.maxSpawnInterval);
+    }
 
     void Update()
     {
-        timer += Time.deltaTime;
+        if (timer.IsTimeOver) return; //  시간 끝나면 종료
 
-        spawnInterval = Random.Range(data.minSpawnInterval, data.maxSpawnInterval);  // 2.5 ~ 4.5초 사이에 랜덤한 값 지정
-        SpawnCount = Random.Range(data.minspawnCount, data.maxSpawnCount);           // 1 ~ 5개 중 랜덤한 값 지정
+        timerLocal += Time.deltaTime;
 
-        if (timer >= spawnInterval) // timer가 랜덤한 값보다 크거나 같으면 코루틴 시작
+        float gameTime = timer.maxTime - timer.RemainTime;
+
+        float difficulty = gameTime * 0.1f;
+
+        float minInterval = Mathf.Max(0.5f, data.minSpawnInterval - difficulty);
+        float maxInterval = Mathf.Max(1.0f, data.maxSpawnInterval - difficulty);
+
+        if (timerLocal >= spawnInterval)
         {
-            timer = 0f;
+            timerLocal = 0f;
 
-            StartCoroutine(SpawnDelay());
-            
+            spawnInterval = Random.Range(minInterval, maxInterval);
+
+            int spawnCount = Random.Range(
+                data.minspawnCount,
+                data.maxSpawnCount + (int)(gameTime / 20f)
+            );
+
+            StartCoroutine(SpawnDelay(spawnCount));
         }
     }
 
-    IEnumerator SpawnDelay() // spawner 생성 
+    IEnumerator SpawnDelay(int count)
     {
-        for (int i = 0; i < SpawnCount; i++) // 랜덤한 spawnCount만큼 Spawner 생성
+        for (int i = 0; i < count; i++)
         {
+            if (timer.IsTimeOver) yield break;
+
             SpawnSpawner();
-
-            yield return new WaitForSeconds(0.3f); // 생성할 때 텀을 주어 생성
+            yield return new WaitForSeconds(0.3f);
         }
     }
-    void SpawnSpawner() // spawner
+
+    void SpawnSpawner()
     {
-        int maxTry = 10; // 무한루프 방지
+        int maxTry = 10;
 
         for (int i = 0; i < maxTry; i++)
         {
-            Vector2 randomDir = Random.insideUnitCircle.normalized;               // 원 안에 랜덤 방향 정하기
-            Vector3 spawnPos = new Vector3(randomDir.x, 0, randomDir.y) * data.radius; // 방향 * 반지름 원의 둘레 위치
-            spawnPos += transform.position;   // Spawner를 기준으로 이동
+            Vector2 randomDir = Random.insideUnitCircle.normalized;
+            Vector3 spawnPos = new Vector3(randomDir.x, 0, randomDir.y) * data.radius;
+            spawnPos += transform.position;
 
             int layerMask = LayerMask.GetMask("Spawner");
+            Collider[] cols = Physics.OverlapSphere(spawnPos, data.minDistance, layerMask);
 
-            Collider[] cols = Physics.OverlapSphere(spawnPos, data.minDistance, layerMask); // Spawner layer를 가진 오브젝트들을 찾기
-
-            if (cols.Length == 0) // 오브젝트를 찾고 겹치는 오브젝트가 없다면 생성
+            if (cols.Length == 0)
             {
                 Instantiate(spawnerPrefab, spawnPos, Quaternion.identity);
                 return;

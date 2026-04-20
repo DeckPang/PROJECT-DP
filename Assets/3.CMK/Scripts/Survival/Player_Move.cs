@@ -26,18 +26,17 @@ public class Player_Move : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("Bullet"))
+        if (collision.collider.CompareTag("Bullet") && !gameOver)
         {
             gameOver = true;
 
-            Vector3 dir = transform.position - collision.transform.position;
-            dir = dir.normalized;
-
-            // 위쪽 힘 적용
+            Vector3 dir = (transform.position - collision.transform.position).normalized;
             dir.y = data.knockbackUpForce;
 
-            // 데이터에서 값 가져오기
             rb.AddForce(dir * data.knockbackForce, ForceMode.Impulse);
+
+            // 여기에 게임 오버 이벤트(UI 표시 등)를 추가하면 좋습니다.
+            Debug.Log("Game Over!");
         }
     }
 

@@ -8,44 +8,45 @@ public class ShieldSpawn : MonoBehaviour
     [Header("Shield Object")]
     public GameObject shield_obj;
 
-    private bool reflect = false;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private bool canReflect = false;
+    private float currentCoolDown = 0f; // SO 데이터를 직접 건드리지 않기 위한 내부 변수
+
+    // UI나 다른 클래스에서 쿨타임 비율을 확인할 수 있게 프로퍼티 제공 (선택 사항)
+    public float CoolDownProgress => Mathf.Clamp01(currentCoolDown / data.CoolDown);
+
     void Start()
     {
-        data.SkillTime = 0.0f;
+        currentCoolDown = data.CoolDown; // 시작 시 바로 사용 가능하게 설정
+        canReflect = true;
         shield_obj.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
-       
-        if (reflect && Input.GetMouseButtonDown(0))
+        // 1. 스킬 사용 로직
+        if (canReflect && Input.GetMouseButtonDown(0))
         {
             StartCoroutine(ShieldRoutine());
-
-            reflect = false;
-            data.SkillTime = 0.0f;
         }
 
-        if (reflect == false && data.SkillTime < data.CoolDown)
+        // 2. 쿨타임 계산 로직 (내부 변수 활용)
+        if (!canReflect)
         {
-            data.SkillTime += Time.deltaTime;
-            if (data.SkillTime > data.CoolDown)
+            currentCoolDown += Time.deltaTime;
+            if (currentCoolDown >= data.CoolDown)
             {
-                reflect = true;
+                canReflect = true;
             }
         }
     }
+
     IEnumerator ShieldRoutine()
     {
+        canReflect = false;
+        currentCoolDown = 0f;
+
         shield_obj.SetActive(true);
-
-        yield return new WaitForSeconds(2f); // 2초 대기
-
+        yield return new WaitForSeconds(2f); // 쉴드 유지 시간
         shield_obj.SetActive(false);
     }
-
 }
- 
