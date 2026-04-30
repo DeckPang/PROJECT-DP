@@ -1,38 +1,86 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RPS : MonoBehaviour
 {
+    public float radius = 5.0f;
+
+    private List<RPS_Player> players = new List<RPS_Player>();
+    public RPS_Player currentPlayer; // 현재 턴 플레이어
+
     void Start()
     {
-        // 1. 플레이어 찾기
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        int player_count = players.Length;
+        GameObject[] playerObjs = GameObject.FindGameObjectsWithTag("Player");
+        int player_count = playerObjs.Length;
 
-        // 2. 순서 리스트 생성 (1 ~ N)
+        // 순서 생성
         List<int> orders = new List<int>();
         for (int i = 0; i < player_count; i++)
-        {
             orders.Add(i + 1);
-        }
 
-        // 3. 셔플 (Fisher-Yates)
+        // 셔플
         for (int i = 0; i < orders.Count; i++)
         {
-            int randomIndex = Random.Range(i, orders.Count);
-
+            int rand = Random.Range(i, orders.Count);
             int temp = orders[i];
-            orders[i] = orders[randomIndex];
-            orders[randomIndex] = temp;
+            orders[i] = orders[rand];
+            orders[rand] = temp;
         }
 
-        // 4. 플레이어에게 순서 부여 + 확인 출력
-        for (int i = 0; i < players.Length; i++)
+        // 플레이어 세팅
+        for (int i = 0; i < playerObjs.Length; i++)
         {
-            RPS_Player p = players[i].GetComponent<RPS_Player>();
+            RPS_Player p = playerObjs[i].GetComponent<RPS_Player>();
             p.order = orders[i];
 
-            Debug.Log(players[i].name + "의 순서: " + p.order);
+            float angle = (360f / player_count) * (p.order - 1);
+            float rad = angle * Mathf.Deg2Rad;
+
+            Vector3 pos = new Vector3(
+                Mathf.Cos(rad) * radius,
+                1,
+                Mathf.Sin(rad) * radius
+            );
+
+            playerObjs[i].transform.position = pos;
+
+            players.Add(p);
         }
+
+        // 정렬 (큰 순서부터)
+        players.Sort((a, b) => b.order.CompareTo(a.order));
+
+        StartCoroutine(GameLoop());
+    }
+
+    IEnumerator GameLoop()
+    {
+        foreach (var player in players)
+        {
+            currentPlayer = player;
+
+            Debug.Log(player.name + " 차례");
+
+            yield return StartCoroutine(player.PlayTurn());
+        }
+
+        Debug.Log("모든 플레이어 선택 완료");
+    }
+
+    //  UI 버튼에서 호출
+    public void OnClickRock()
+    {
+        currentPlayer.SetChoice(RPSChoice.Rock);
+    }
+
+    public void OnClickPaper()
+    {
+        currentPlayer.SetChoice(RPSChoice.Paper);
+    }
+
+    public void OnClickScissors()
+    {
+        currentPlayer.SetChoice(RPSChoice.Scissors);
     }
 }
