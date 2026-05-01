@@ -10,15 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 993915e31c0a54548854224b5d84bb7b, type: 3}
-  m_Name: CD_BasicWalk
+  m_Name: CD_RewardDash
   m_EditorClassIdentifier: 
-  cardId: basic_walk
-  cardName: "\uB69C\uBC85\uB69C\uBC85"
-  description: "\uAE30\uBCF8 \uC774\uB3D9 \uCE74\uB4DC. 0~10\uCE78 \uB79C\uB364\uC73C\uB85C
-    \uC774\uB3D9\uD569\uB2C8\uB2E4."
-  cardType: 0
-  cardPoolType: 2
-  cost: 0
-  effectType: 1
-  value: 10
+  cardId: reward_dash
+  cardName: "\uC804\uB825 \uC9C8\uC8FC 5"
+  description: "\uC989\uC2DC 5\uCE78 \uC774\uB3D9\uD569\uB2C8\uB2E4."
+  cardType: 1
+  cardPoolType: 1
+  cost: 1
+  effectType: 2
+  value: 5
   trapType: 0

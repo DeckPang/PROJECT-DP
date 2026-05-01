@@ -9,14 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 993915e31c0a54548854224b5d84bb7b, type: 3}
-  m_Name: CD_Sprint5
+  m_Script: {fileID: 11500000, guid: a340268870b345745843041cefd9f804, type: 3}
+  m_Name: PlayerData
   m_EditorClassIdentifier: 
-  cardId: sprint_5
-  cardName: "\uC804\uB825 \uC9C8\uC8FC 5"
-  description: "\uC989\uC2DC 5\uCE78 \uC774\uB3D9\uD569\uB2C8\uB2E4."
-  cardType: 1
-  cost: 5
-  effectType: 2
-  value: 5
-  trapType: 0
+  speed: 5
+  moveRange: 10
+  rotateSpeed: 10
+  stopDistance: 0.5
+  knockbackForce: 30
+  knockbackUpForce: 0.5
