@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/2.Unity/PROJECT-DP -path */Photon/* -name *Runner* -type f)",
+      "Bash(grep -l \"NetworkRunner\\\\|INetworkRunnerCallbacks\" /c/2.Unity/PROJECT-DP/Assets/1.KMK/Scripts/**/*.cs)"
+    ]
+  }
+}

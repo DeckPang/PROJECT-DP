@@ -27,6 +27,7 @@ MonoBehaviour:
     - 07ce7f19cfad2b64486f3394876deb3a
     - d2ee3a61813321d41b93f4ca24abf657
     - 3539d4acdd4ed104bb779925a9930a1b
+    - 28b5bae316d6154459a81b6b256ea193
     values:
     - goDatas_byGlobalId:
         keys: []
@@ -80,6 +81,9 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-5815419713453344689-161431447775967885
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1039314631-0
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-2344202982151836997-5033600873565361278
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-849113939-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-612130295-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-635603660-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
@@ -133,6 +137,12 @@ MonoBehaviour:
           iconNameOrGuid: Settings Icon
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
+        - colorIndex: 7
+          iconNameOrGuid: ReflectionProbe Icon
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 1
+          iconNameOrGuid: 
     - goDatas_byGlobalId:
         keys:
         - globalObjectIdString: GlobalObjectId_V1-2-d602a8e16f1ec7a43a65d961ee83cc0b-1058440484-0
@@ -483,6 +493,102 @@ MonoBehaviour:
           iconNameOrGuid: Settings Icon
         - colorIndex: 7
           iconNameOrGuid: AvatarMask On Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1058440484-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1459778711-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-250792618-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-610116568-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-395930636-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-6790388568945429470-6704550450027963063
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-912439717-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1909603367-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-2753744-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1656998135-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1914052383-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-5482637324130315745-6704550450027963063
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1688522949-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1353674502-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-341063557-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-4126521255070053315-6704550450027963063
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-2426150780129854909-6704550450027963063
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-682437975-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1705530998-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1549745902-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-550612257-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1877934517-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1542343262902115905-161431447775967885
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-5815419713453344689-161431447775967885
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-1039314631-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-2344202982151836997-5033600873565361278
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-71343216-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-179501203-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-28295311-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-900851901-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-150048668-0
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+        - colorIndex: 8
+          iconNameOrGuid: 
+        - colorIndex: 0
+          iconNameOrGuid: Favorite
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 7
+          iconNameOrGuid: AvatarMask On Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 0
+          iconNameOrGuid: Favorite
+        - colorIndex: 0
+          iconNameOrGuid: Favorite
+        - colorIndex: 0
+          iconNameOrGuid: Favorite
+        - colorIndex: 0
+          iconNameOrGuid: Favorite
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 0
+          iconNameOrGuid: Camera Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
         - colorIndex: 1
           iconNameOrGuid: Settings Icon
         - colorIndex: 1
