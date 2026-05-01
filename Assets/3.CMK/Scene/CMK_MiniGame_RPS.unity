@@ -857,8 +857,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1774780288}
-        m_TargetAssemblyTypeName: RPS, Assembly-CSharp
+      - m_Target: {fileID: 1774780290}
+        m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickRock
         m_Mode: 1
         m_Arguments:
@@ -1504,6 +1504,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1774780289}
   - component: {fileID: 1774780288}
+  - component: {fileID: 1774780290}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1525,6 +1526,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 5
   currentPlayer: {fileID: 0}
+  isInputEnabled: 0
 --- !u!4 &1774780289
 Transform:
   m_ObjectHideFlags: 0
@@ -1540,6 +1542,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1774780290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774780287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c55ab30f00b4de24c97d528e61297ed9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rps: {fileID: 1774780288}
 --- !u!1 &1928067872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,8 +1638,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1774780288}
-        m_TargetAssemblyTypeName: RPS, Assembly-CSharp
+      - m_Target: {fileID: 1774780290}
+        m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickScissors
         m_Mode: 1
         m_Arguments:
@@ -1879,8 +1894,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1774780288}
-        m_TargetAssemblyTypeName: RPS, Assembly-CSharp
+      - m_Target: {fileID: 1774780290}
+        m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickPaper
         m_Mode: 1
         m_Arguments:

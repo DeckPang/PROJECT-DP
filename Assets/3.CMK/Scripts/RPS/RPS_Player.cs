@@ -19,18 +19,16 @@ public class RPS_Player : MonoBehaviour
     {
         hasChosen = false;
 
-        Debug.Log(name + " 선택 대기 중...");
+        Debug.Log(name + " 선택 대기");
 
-        // 선택할 때까지 대기
         while (!hasChosen)
         {
             yield return null;
         }
 
-        Debug.Log(name + " 선택 완료: " + choice);
+        Debug.Log(name + " 선택: " + choice);
     }
 
-    //  RPS에서 호출됨
     public void SetChoice(RPSChoice c)
     {
         choice = c;
