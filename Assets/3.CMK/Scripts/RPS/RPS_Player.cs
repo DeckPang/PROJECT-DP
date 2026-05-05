@@ -12,6 +12,7 @@ public class RPS_Player : MonoBehaviour
 {
     public int order;
     public RPSChoice choice;
+    public int score;
 
     private bool hasChosen = false;
 
@@ -34,4 +35,10 @@ public class RPS_Player : MonoBehaviour
         choice = c;
         hasChosen = true;
     }
+
+    public void AddScore(int amount)
+    {
+        score += amount;
+    }
+
 }
