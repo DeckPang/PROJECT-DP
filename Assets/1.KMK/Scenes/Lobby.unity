@@ -3682,8 +3682,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 900851904}
-  - component: {fileID: 900851902}
-  - component: {fileID: 900851905}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -3691,39 +3689,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &900851902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900851901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4330771c3860fe942bb1a5ed771e1f9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lobbyManager: {fileID: 900851905}
-  initialPanel: {fileID: 71343216}
-  createRoomPanel: {fileID: 179501203}
-  lobbyRoomPanel: {fileID: 28295311}
-  showCreateRoomPanelButton: {fileID: 317469257}
-  joinButton: {fileID: 1497469048}
-  initialStatusText: {fileID: 188314904}
-  roomNameInput: {fileID: 710189487}
-  hostNicknameInput: {fileID: 0}
-  createRoomButton: {fileID: 1583480383}
-  backButton: {fileID: 1060498742}
-  playerSlots:
-  - {fileID: 2003209517}
-  - {fileID: 808867310}
-  - {fileID: 756926931}
-  - {fileID: 1211431345}
-  startButton: {fileID: 5377345}
-  readyButton: {fileID: 1797340360}
-  readyButtonText: {fileID: 2108443618}
-  exitButton: {fileID: 418249483}
-  playerCountText: {fileID: 627526364}
 --- !u!4 &900851904
 Transform:
   m_ObjectHideFlags: 0
@@ -3739,20 +3704,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &900851905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900851901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3dffb8be2cd0eb4f9d631e47fca5d7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runnerPrefab: {fileID: 7646242289940693403, guid: 51a46f9ad5bf32e4fbed815eeabea40e, type: 3}
-  lobbyStatePrefab: {fileID: 737714263406390001, guid: 4a9e20708b0b81d43bfa06c0b9dd7102, type: 3}
 --- !u!1 &922165394
 GameObject:
   m_ObjectHideFlags: 0
