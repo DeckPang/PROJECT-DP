@@ -29,6 +29,10 @@ public class LobbyState : NetworkBehaviour
 
     public override void Spawned()
     {
+        // 내가 등장했음을 LobbyController에게 알림 (Client에서 특히 중요)
+        var ctrl = FindAnyObjectByType<LobbyController>();
+        if (ctrl != null) ctrl.RegisterLobbyState(this);
+
         // 늦게 들어온 클라가 즉시 UI를 그릴 수 있도록 한 번 강제 발생
         SlotsChanged?.Invoke();
     }

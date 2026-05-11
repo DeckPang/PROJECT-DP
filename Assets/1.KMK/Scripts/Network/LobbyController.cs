@@ -30,6 +30,7 @@ public class LobbyController : MonoBehaviour, INetworkRunnerCallbacks
     public LobbyState    State  => _state;
     public NetworkRunner Runner => _runner;
     public bool          IsHost => _runner != null && _runner.IsServer;
+    public string        SessionName => _runner?.SessionInfo?.Name ?? string.Empty;
 
     public int GetMySlot()
     {
@@ -89,6 +90,12 @@ public class LobbyController : MonoBehaviour, INetworkRunnerCallbacks
         if (_state != null) return;
         var found = FindAnyObjectByType<LobbyState>();
         if (found != null) BindLobbyState(found);
+    }
+
+    /// <summary>LobbyState가 자신의 Spawned()에서 직접 호출. Client 동기화 타이밍 안전판.</summary>
+    public void RegisterLobbyState(LobbyState state)
+    {
+        BindLobbyState(state);
     }
 
     private void BindLobbyState(LobbyState state)

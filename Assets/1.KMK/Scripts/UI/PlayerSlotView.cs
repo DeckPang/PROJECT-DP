@@ -1,30 +1,33 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-/// <summary>
-/// 로비 슬롯 1칸의 UI를 담당합니다. 표시 전용(View).
-/// </summary>
 public class PlayerSlotView : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private GameObject      readyBadge;     // Ready 표시 (체크 아이콘 등)
-    [SerializeField] private GameObject      hostBadge;      // 호스트 왕관 등
-    [SerializeField] private GameObject      emptyOverlay;   // "비어있음" 표시
+    [Header("뷰 컨테이너")]
+    [SerializeField] private GameObject emptyView;       // EmptyView GameObject
+    [SerializeField] private GameObject occupiedView;    // OccupiedView GameObject
 
-    public void SetOccupied(string playerName, bool isReady, bool isHost)
+    [Header("OccupiedView 내부")]
+    [SerializeField] private TextMeshProUGUI nameText;   // 점유 시 닉네임
+    [SerializeField] private GameObject readyBadge;      // 체크 아이콘
+    [SerializeField] private GameObject hostBadge;       // 왕관 아이콘
+    [SerializeField] private GameObject meIndicator;     // "나" 표시 (테두리, 뱃지 등)
+
+    public void SetOccupied(string playerName, bool isReady, bool isHost, bool isMe)
     {
-        if (nameText      != null) nameText.text = playerName;
-        if (readyBadge    != null) readyBadge.SetActive(isReady);
-        if (hostBadge     != null) hostBadge.SetActive(isHost);
-        if (emptyOverlay  != null) emptyOverlay.SetActive(false);
+        if (emptyView != null) emptyView.SetActive(false);
+        if (occupiedView != null) occupiedView.SetActive(true);
+
+        if (nameText != null) nameText.text = playerName;
+        if (readyBadge != null) readyBadge.SetActive(isReady);
+        if (hostBadge != null) hostBadge.SetActive(isHost);
+        if (meIndicator != null) meIndicator.SetActive(isMe);
     }
 
     public void SetEmpty()
     {
-        if (nameText      != null) nameText.text = "비어있음";
-        if (readyBadge    != null) readyBadge.SetActive(false);
-        if (hostBadge     != null) hostBadge.SetActive(false);
-        if (emptyOverlay  != null) emptyOverlay.SetActive(true);
+        if (emptyView != null) emptyView.SetActive(true);
+        if (occupiedView != null) occupiedView.SetActive(false);
+        if (meIndicator != null) meIndicator.SetActive(false);
     }
 }

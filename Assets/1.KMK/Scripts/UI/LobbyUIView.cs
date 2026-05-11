@@ -22,12 +22,12 @@ public class LobbyUIView : MonoBehaviour
 
     [Header("CreateRoomPanel")]
     [SerializeField] private TMP_InputField  roomNameInput;
-    [SerializeField] private TMP_InputField  hostNicknameInput;
     [SerializeField] private Button          createRoomButton;
     [SerializeField] private Button          backButton;
 
     [Header("LobbyRoomPanel")]
-    [SerializeField] private PlayerSlotView[] slotViews;     // 인스펙터에서 4개 연결
+    [SerializeField] private TextMeshProUGUI  roomNameText;    // 방 이름 표시
+    [SerializeField] private PlayerSlotView[] slotViews;       // 인스펙터에서 4개 연결
     [SerializeField] private Button           startButton;
     [SerializeField] private Button           readyButton;
     [SerializeField] private TextMeshProUGUI  readyButtonText;
@@ -87,13 +87,14 @@ public class LobbyUIView : MonoBehaviour
     {
         if (_state == null) return;
 
+        int mySlot = controller.GetMySlot();   // 내 슬롯 번호 미리 계산
         int occupied = 0;
         for (int i = 0; i < slotViews.Length && i < LobbyState.MaxSlots; i++)
         {
             var s = _state.Slots[i];
             if (s.Occupied)
             {
-                slotViews[i].SetOccupied(s.Name.ToString(), s.Ready, isHost: i == 0);
+                slotViews[i].SetOccupied(s.Name.ToString(), s.Ready, isHost: i == 0, isMe: i == mySlot);
                 occupied++;
             }
             else
@@ -105,7 +106,6 @@ public class LobbyUIView : MonoBehaviour
         if (playerCountText != null)
             playerCountText.text = $"{occupied} / {LobbyState.MaxSlots}";
 
-        int mySlot = controller.GetMySlot();
         if (mySlot > 0 && readyButtonText != null)
         {
             bool myReady = _state.Slots[mySlot].Ready;
@@ -141,8 +141,6 @@ public class LobbyUIView : MonoBehaviour
         if (result.Ok)
         {
             ShowLobbyRoomPanel();
-            if (hostNicknameInput != null && !string.IsNullOrEmpty(hostNicknameInput.text))
-                controller.SetMyName(hostNicknameInput.text.Trim());
         }
         else
         {
@@ -194,6 +192,8 @@ public class LobbyUIView : MonoBehaviour
         if (startButton != null) startButton.gameObject.SetActive(isHost);
         if (readyButton != null) readyButton.gameObject.SetActive(!isHost);
         if (startButton != null) startButton.interactable = false;
+
+        if (roomNameText != null) roomNameText.text = controller.SessionName;
     }
 
     private void OnDisconnected()

@@ -589,7 +589,7 @@ MonoBehaviour:
           iconNameOrGuid: Canvas Icon
         - colorIndex: 0
           iconNameOrGuid: Canvas Icon
-        - colorIndex: 1
+        - colorIndex: 9
           iconNameOrGuid: Settings Icon
         - colorIndex: 1
           iconNameOrGuid: Settings Icon

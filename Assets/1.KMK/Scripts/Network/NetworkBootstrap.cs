@@ -9,17 +9,21 @@ using UnityEngine;
 public class NetworkBootstrap : MonoBehaviour
 {
     [SerializeField] private NetworkRunner runnerPrefab;
-    [SerializeField] private int    maxPlayers     = 4;
+    [SerializeField] private int maxPlayers = 4;
     [SerializeField] private string defaultSession = "DeckPang";
 
     public NetworkRunner Runner { get; private set; }
     public bool IsRunning => Runner != null && Runner.IsRunning;
 
-    public Task<StartGameResult> StartHost(string sessionName) =>
-        StartGameInternal(GameMode.Host, sessionName);
+    public Task<StartGameResult> StartHost(string sessionName)
+    {
+        return StartGameInternal(GameMode.Host, sessionName);
+    }
 
-    public Task<StartGameResult> StartClient(string sessionName) =>
-        StartGameInternal(GameMode.Client, sessionName);
+    public Task<StartGameResult> StartClient(string sessionName)
+    {
+        return StartGameInternal(GameMode.Client, sessionName);
+    }
 
     public async Task Shutdown()
     {
@@ -42,9 +46,9 @@ public class NetworkBootstrap : MonoBehaviour
         string session = string.IsNullOrEmpty(sessionName) ? defaultSession : sessionName;
         return await Runner.StartGame(new StartGameArgs
         {
-            GameMode     = mode,
-            SessionName  = session,
-            PlayerCount  = maxPlayers,
+            GameMode = mode,
+            SessionName = session,
+            PlayerCount = maxPlayers,
             SceneManager = Runner.GetComponent<NetworkSceneManagerDefault>(),
         });
     }
