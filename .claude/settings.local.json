@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(find /c/2.Unity/PROJECT-DP -path */Photon/* -name *Runner* -type f)",
-      "Bash(grep -l \"NetworkRunner\\\\|INetworkRunnerCallbacks\" /c/2.Unity/PROJECT-DP/Assets/1.KMK/Scripts/**/*.cs)"
+      "Bash(grep -l \"NetworkRunner\\\\|INetworkRunnerCallbacks\" /c/2.Unity/PROJECT-DP/Assets/1.KMK/Scripts/**/*.cs)",
+      "Bash(Get-ChildItem -Path \"C:\\\\2.Unity\\\\PROJECT-DP\\\\Assets\\\\2.YYB\\\\Scripts\" -Recurse -Include \"*.cs\")",
+      "Bash(Select-Object FullName)",
+      "Skill(update-config)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\ds5th\\\\.claude\" -Name)",
+      "Bash(Select-Object -First 30)",
+      "PowerShell(Get-ChildItem *)",
+      "Bash(claude mcp *)",
+      "PowerShell(Get-Process *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\2.Unity\\\\PROJECT-DP\\\\Assets\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\2.Unity\\\\PROJECT-DP\\\\Assets\\\\2.YYB\\\\Scripts\" -Recurse -File)"
     ]
   }
 }
