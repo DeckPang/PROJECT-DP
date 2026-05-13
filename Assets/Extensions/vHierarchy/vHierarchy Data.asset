@@ -28,6 +28,7 @@ MonoBehaviour:
     - d2ee3a61813321d41b93f4ca24abf657
     - 3539d4acdd4ed104bb779925a9930a1b
     - 28b5bae316d6154459a81b6b256ea193
+    - 0c8a19d700d6aaa47a488018ef8a9911
     values:
     - goDatas_byGlobalId:
         keys: []
@@ -530,6 +531,7 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-28295311-0
         - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-900851901-0
         - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-150048668-0
+        - globalObjectIdString: GlobalObjectId_V1-2-28b5bae316d6154459a81b6b256ea193-992600690-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Camera Icon
@@ -592,4 +594,42 @@ MonoBehaviour:
         - colorIndex: 9
           iconNameOrGuid: Settings Icon
         - colorIndex: 1
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-576019049-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1912497127-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1950453864-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1707591711-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1845097045-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1320962933-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1473554277-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-726473995-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-789287894-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-881223946-0
+        - globalObjectIdString: GlobalObjectId_V1-2-0c8a19d700d6aaa47a488018ef8a9911-1168634192-0
+        values:
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 4
+          iconNameOrGuid: PreMatCylinder
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+        - colorIndex: 0
+          iconNameOrGuid: Canvas Icon
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 9
+          iconNameOrGuid: Settings Icon
+        - colorIndex: 9
           iconNameOrGuid: Settings Icon

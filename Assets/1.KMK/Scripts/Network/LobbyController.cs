@@ -72,6 +72,9 @@ public class LobbyController : MonoBehaviour, INetworkRunnerCallbacks
         if (!IsHost || _state == null) return;
         if (!_state.CanStart()) return;
 
+        // 슬롯 정보를 NetworkBootstrap에 백업 (씬 전환 시 LobbyState 사라짐)
+        if (bootstrap != null) bootstrap.SnapshotLobbySlots(_state);
+
         _runner.SessionInfo.IsOpen    = false;
         _runner.SessionInfo.IsVisible = false;
         _runner.LoadScene(SceneRef.FromIndex(gameSceneIndex));
@@ -111,18 +114,19 @@ public class LobbyController : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            // Host: 첫 입장 시 LobbyState Spawn
-            if (_state == null && lobbyStatePrefab != null)
-            {
-                var obj = runner.Spawn(lobbyStatePrefab);
-                BindLobbyState(obj.GetComponent<LobbyState>());
-            }
+            EnsureLobbyStateSpawnedAsync(runner);   // fire-and-forget
             _state?.TryAssignSlot(player, out _);
         }
-        else
-        {
-            EnsureLobbyStateBound();
-        }
+        else { EnsureLobbyStateBound(); }
+    }
+
+    private async void EnsureLobbyStateSpawnedAsync(NetworkRunner runner)
+    {
+        if (_state != null) return;
+        if (lobbyStatePrefab == null) return;
+
+        var obj = await runner.SpawnAsync(lobbyStatePrefab);
+        if (obj != null) BindLobbyState(obj.GetComponent<LobbyState>());
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)

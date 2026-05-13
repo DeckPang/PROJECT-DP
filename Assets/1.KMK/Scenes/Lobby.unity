@@ -4633,10 +4633,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 900851904}
-  - component: {fileID: 900851906}
   - component: {fileID: 900851905}
   m_Layer: 0
-  m_Name: LobbyManager
+  m_Name: LobbyController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4669,24 +4668,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be8de82e9e8d52e4ea5670817739fe5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bootstrap: {fileID: 900851906}
+  bootstrap: {fileID: 992600692}
   lobbyStatePrefab: {fileID: 4875865579886883808, guid: 2cb89e256106c0947a501053a387fbc2, type: 3}
   gameSceneIndex: 1
---- !u!114 &900851906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900851901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75a0cfb96c03c224fa3eef2437835d4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runnerPrefab: {fileID: 7646242289940693403, guid: 51a46f9ad5bf32e4fbed815eeabea40e, type: 3}
-  maxPlayers: 4
-  defaultSession: PROJECT DP
 --- !u!1 &933443694
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,6 +4884,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 981456000}
   m_CullTransparentMesh: 1
+--- !u!1 &992600690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 992600693}
+  - component: {fileID: 992600692}
+  m_Layer: 0
+  m_Name: NetworkBootstrap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &992600692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992600690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a0cfb96c03c224fa3eef2437835d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runnerPrefab: {fileID: 7646242289940693403, guid: 51a46f9ad5bf32e4fbed815eeabea40e, type: 3}
+  maxPlayers: 4
+  defaultSession: PROJECT DP
+--- !u!4 &992600693
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992600690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1008843504
 GameObject:
   m_ObjectHideFlags: 0
@@ -9871,6 +9902,7 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
+  - {fileID: 992600693}
   - {fileID: 900851904}
   - {fileID: 2034003673}
   - {fileID: 517578407}

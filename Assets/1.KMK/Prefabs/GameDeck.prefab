@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1559952368680557308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 34831832535113418}
+  - component: {fileID: 6350607930672458118}
+  - component: {fileID: 5358858581292117299}
+  m_Layer: 0
+  m_Name: GameDeck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &34831832535113418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559952368680557308}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6350607930672458118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559952368680557308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cf7da18acf08204e9d45d564a76353a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allCards:
+  - {fileID: 11400000, guid: dc6719d0f883a904da94633bb8407bcd, type: 2}
+  - {fileID: 11400000, guid: f1f16c6eb25517a4d902b076bdb379e1, type: 2}
+  - {fileID: 11400000, guid: 3b750ab93d674774fb98a8eeafbc27fc, type: 2}
+  - {fileID: 11400000, guid: ff1758c40ebd32447801a4c1a18e349a, type: 2}
+  - {fileID: 11400000, guid: 9b24454f1640dc549ae266138aaa8f1c, type: 2}
+  - {fileID: 11400000, guid: e8092b9da5b0ecd4481e997b8f67f7a4, type: 2}
+  - {fileID: 11400000, guid: a4867e10148b8c74cb03ae7ccc5b8527, type: 2}
+  - {fileID: 11400000, guid: d3b6296037b5dd6468649e228fd70e7e, type: 2}
+  _DrawPileCount: 0
+  _DiscardPileCount: 0
+--- !u!114 &5358858581292117299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559952368680557308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3128782977
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6350607930672458118}
+  ForceRemoteRenderTimeframe: 0
