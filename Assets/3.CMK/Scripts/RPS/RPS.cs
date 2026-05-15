@@ -160,8 +160,8 @@ public class RPS : MonoBehaviour
             if (IsWin(attacker.choice, target.choice))
             {
                 Debug.Log(attacker.name + " -> " + target.name + " 승리");
-                attacker.AddScore(1);
                 toRemove.Add(target);
+
             }
             else
             {
@@ -179,6 +179,12 @@ public class RPS : MonoBehaviour
         {
             players.Remove(p);
             p.gameObject.SetActive(false);
+        }
+
+        // 생존자 전원 +1점
+        foreach (var survivor in players)
+        {
+            survivor.AddScore(1);
         }
     }
 
