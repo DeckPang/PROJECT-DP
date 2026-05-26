@@ -8,7 +8,13 @@ public class Ball_Player : MonoBehaviour
     [Header("Player Force")]
     [SerializeField]
     private float force = 1.0f;
+    private float power;
     private float distance;
+
+    private Renderer rend;
+
+    public Material outlineMaterial;
+    private Material originalMaterial;
 
     bool isDragging;
 
@@ -20,6 +26,9 @@ public class Ball_Player : MonoBehaviour
 
     void Start()
     {
+        rend = GetComponent<Renderer>();
+        originalMaterial = rend.material;
+
         rb = GetComponent<Rigidbody>();
         isDragging = false;
     }
@@ -30,45 +39,74 @@ public class Ball_Player : MonoBehaviour
 
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
 
+        RaycastHit hit;
+
+
         if (Input.GetMouseButtonDown(0)) // 홀드 중일 때
         {
-            RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit))
             {
                 if (hit.collider.CompareTag("Player"))
                 {
-                    isDragging = true; 
+                    isDragging = true;
                 }
 
             }
-                
-
+            rend.material = outlineMaterial;
         }
 
-        if (Input.GetMouseButton(0) && isDragging) // 마우스의 위치를 실시간으로 저장
+        if (!isDragging) // 홀드 중이 아닐 때
         {
-            if (groundPlane.Raycast(ray, out distance))
+            if (Physics.Raycast(ray, out hit))
             {
-                // 실제 바닥 위치 얻기
-                EndPoint = ray.GetPoint(distance);
-
-                // 높이 고정
-                EndPoint.y = transform.position.y;
+                if (hit.collider.CompareTag("Player"))
+                {
+                    rend.material = outlineMaterial;
+                }
+                else
+                {
+                    rend.material = originalMaterial;
+                }
+            }
+            else
+            {
+                rend.material = originalMaterial;
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && isDragging) // 발사
+        
+        if (isDragging)
         {
-            Vector3 dir = transform.position - EndPoint;
+            if (Input.GetMouseButton(0)) // 마우스의 위치를 실시간으로 저장
+            {
+                if (groundPlane.Raycast(ray, out distance))
+                {
+                    // 실제 바닥 위치 얻기
+                    EndPoint = ray.GetPoint(distance);
 
-            dir.y = 0.0f;
+                    // 높이 고정
+                    EndPoint.y = transform.position.y;
+                }
 
-            rb.linearVelocity = Vector3.zero;
+            }
 
-            rb.AddForce(dir * force, ForceMode.Impulse);
+            if (Input.GetMouseButtonUp(0)) // 발사
+            {
+                Vector3 dir = transform.position - EndPoint;
 
-            isDragging = false;
+                dir.y = 0.0f;
+
+                rb.linearVelocity = Vector3.zero;
+
+                rb.AddForce(dir * force, ForceMode.Impulse);
+
+                isDragging = false;
+
+                rend.material = originalMaterial;
+            }
         }
+
+        
     }
 }
