@@ -8,7 +8,6 @@ public class PlayerPawn : MonoBehaviour
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private CharacterInfo characterInfo;
     [SerializeField] private BoardNode currentNode;
-    [SerializeField] private BranchSelectionUI branchSelectionUI;
 
     [Header("Move Settings")]
     [SerializeField] private float verticalOffset = 0.75f;
@@ -52,31 +51,31 @@ public class PlayerPawn : MonoBehaviour
     {
         if (currentNode == null)
         {
-            Debug.LogWarning("[PlayerPawn] CurrentNode°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("[PlayerPawn] CurrentNodeê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         transform.position = currentNode.transform.position + Vector3.up * verticalOffset;
-        Debug.Log($"[{PawnName}] ÇöÀç À§Ä¡ ½º³À -> Node {currentNode.NodeId}");
+        Debug.Log($"[{PawnName}] í˜„ì¬ ìœ„ì¹˜ ìŠ¤ëƒ… -> Node {currentNode.NodeId}");
     }
 
     public bool MoveSteps(int steps)
     {
         if (isMoving)
         {
-            Debug.LogWarning($"[{PawnName}] ÀÌ¹Ì ÀÌµ¿ ÁßÀÔ´Ï´Ù.");
+            Debug.LogWarning($"[{PawnName}] ì´ë¯¸ ì´ë™ ì¤‘ì…ë‹ˆë‹¤.");
             return false;
         }
 
         if (isWaitingForBranchChoice)
         {
-            Debug.LogWarning($"[{PawnName}] ÇöÀç °¥¸²±æ ¼±ÅÃ ´ë±â ÁßÀÔ´Ï´Ù.");
+            Debug.LogWarning($"[{PawnName}] í˜„ì¬ ê°ˆë¦¼ê¸¸ ì„ íƒ ëŒ€ê¸° ì¤‘ì…ë‹ˆë‹¤.");
             return false;
         }
 
         if (currentNode == null)
         {
-            Debug.LogWarning($"[{PawnName}] CurrentNode°¡ ¾ø¾î ÀÌµ¿ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[{PawnName}] CurrentNodeê°€ ì—†ì–´ ì´ë™í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return false;
         }
 
@@ -101,7 +100,7 @@ public class PlayerPawn : MonoBehaviour
         {
             if (currentNode.NextNodes == null || currentNode.NextNodes.Count == 0)
             {
-                Debug.LogWarning($"[{PawnName}] Node {currentNode.NodeId} ¿¡ ´ÙÀ½ ³ëµå°¡ ¾ø½À´Ï´Ù. ÀÌµ¿ Á¾·á.");
+                Debug.LogWarning($"[{PawnName}] Node {currentNode.NodeId} ì— ë‹¤ìŒ ë…¸ë“œê°€ ì—†ìŠµë‹ˆë‹¤. ì´ë™ ì¢…ë£Œ.");
                 break;
             }
 
@@ -117,7 +116,7 @@ public class PlayerPawn : MonoBehaviour
 
                 if (pendingBranchIndex < 0 || pendingBranchIndex >= currentNode.NextNodes.Count)
                 {
-                    Debug.LogWarning($"[{PawnName}] Àß¸øµÈ ºĞ±â ¼±ÅÃ°ªÀÔ´Ï´Ù. ÀÌµ¿ Á¾·á.");
+                    Debug.LogWarning($"[{PawnName}] ì˜ëª»ëœ ë¶„ê¸° ì„ íƒê°’ì…ë‹ˆë‹¤. ì´ë™ ì¢…ë£Œ.");
                     break;
                 }
 
@@ -127,7 +126,7 @@ public class PlayerPawn : MonoBehaviour
 
             if (nextNode == null)
             {
-                Debug.LogWarning($"[{PawnName}] ¼±ÅÃµÈ ´ÙÀ½ ³ëµå°¡ null ÀÔ´Ï´Ù. ÀÌµ¿ Á¾·á.");
+                Debug.LogWarning($"[{PawnName}] ì„ íƒëœ ë‹¤ìŒ ë…¸ë“œê°€ null ì…ë‹ˆë‹¤. ì´ë™ ì¢…ë£Œ.");
                 break;
             }
 
@@ -136,7 +135,7 @@ public class PlayerPawn : MonoBehaviour
 
             if (currentNode.NodeType == BoardNodeType.Start)
             {
-                Debug.Log($"[{PawnName}] Start ³ëµå¸¦ Åë°ú/µµÂøÇß½À´Ï´Ù. (ÃßÈÄ ÃÖ´ë ¸¶³ª Áõ°¡ ¿¬°á °¡´É)");
+                Debug.Log($"[{PawnName}] Start ë…¸ë“œë¥¼ í†µê³¼/ë„ì°©í–ˆìŠµë‹ˆë‹¤. (ì¶”í›„ ìµœëŒ€ ë§ˆë‚˜ ì¦ê°€ ì—°ê²° ê°€ëŠ¥)");
             }
 
             remainingSteps--;
@@ -152,19 +151,9 @@ public class PlayerPawn : MonoBehaviour
         isWaitingForBranchChoice = true;
         pendingBranchIndex = -1;
 
-        Debug.Log($"[{PawnName}] °¥¸²±æ µµÂø. ºĞ±â¸¦ ¼±ÅÃÇÏ¼¼¿ä.");
-
-        if (branchSelectionUI != null)
-        {
-            branchSelectionUI.ShowChoices(this, currentNode.NextNodes);
-        }
+        Debug.Log($"[{PawnName}] ê°ˆë¦¼ê¸¸ ë„ì°©. ë¶„ê¸°ë¥¼ ì„ íƒí•˜ì„¸ìš”.");
 
         yield return new WaitUntil(() => pendingBranchIndex >= 0);
-
-        if (branchSelectionUI != null)
-        {
-            branchSelectionUI.HideChoices();
-        }
 
         isWaitingForBranchChoice = false;
     }
@@ -173,11 +162,11 @@ public class PlayerPawn : MonoBehaviour
     {
         if (!isWaitingForBranchChoice)
         {
-            Debug.LogWarning($"[{PawnName}] ÇöÀç´Â ºĞ±â ¼±ÅÃ »óÅÂ°¡ ¾Æ´Õ´Ï´Ù.");
+            Debug.LogWarning($"[{PawnName}] í˜„ì¬ëŠ” ë¶„ê¸° ì„ íƒ ìƒíƒœê°€ ì•„ë‹™ë‹ˆë‹¤.");
             return;
         }
 
         pendingBranchIndex = branchIndex;
-        Debug.Log($"[{PawnName}] ºĞ±â ¼±ÅÃ ¿Ï·á -> {branchIndex}");
+        Debug.Log($"[{PawnName}] ë¶„ê¸° ì„ íƒ ì™„ë£Œ -> {branchIndex}");
     }
 }

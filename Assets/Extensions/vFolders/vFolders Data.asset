@@ -33,6 +33,7 @@ MonoBehaviour:
     - 338d008cfc2141e44a476106e6e15d2a
     - 7c0a16bbe23e8c34f91e3d0413b65b83
     - d817d8da5038fb44f9ae8afb9403fab2
+    - 18e2a28d8898b3249b8b9e3fbab9f78a
     values:
     - iconNameOrGuid: 
       colorIndex: 0
@@ -108,6 +109,10 @@ MonoBehaviour:
       isColorRecursive: 0
     - iconNameOrGuid: cs Script Icon
       colorIndex: 5
+      isIconRecursive: 0
+      isColorRecursive: 0
+    - iconNameOrGuid: Font Icon
+      colorIndex: 0
       isIconRecursive: 0
       isColorRecursive: 0
   bookmarks:
