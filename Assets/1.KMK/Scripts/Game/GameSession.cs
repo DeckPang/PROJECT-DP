@@ -62,7 +62,8 @@ public class GameSession : NetworkBehaviour
                 Debug.Log($"[GameSession] Turn {TurnNumber} → Slot {CurrentTurnSlot}");
 
                 // 새 차례 플레이어에게 TurnGranted 카드 자동 지급
-                nextPlayer.RefillTurnGrantedCards();
+                //nextPlayer.RefillTurnGrantedCards();
+                nextPlayer.PrepareTurnStart(); //이거 한줄 바꿈
                 return;
             }
         }
