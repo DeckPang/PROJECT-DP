@@ -10,6 +10,12 @@ public class Ball_Player : MonoBehaviour
     private float force = 1.0f;
     private float power;
     private float distance;
+    private float friction;
+    private float time = 0.0f;
+    private float current_time = 1.5f;
+
+    public int order;
+    public int score;
 
     private Renderer rend;
 
@@ -33,7 +39,18 @@ public class Ball_Player : MonoBehaviour
         isDragging = false;
     }
 
+    void AddScore(int amout)
+    {
+        score += amout;
+    }
+
     void Update()
+    {
+        DragBall();
+        
+    }
+
+    void DragBall()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -47,7 +64,7 @@ public class Ball_Player : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.gameObject == this.gameObject)
                 {
                     isDragging = true;
                 }
@@ -60,7 +77,7 @@ public class Ball_Player : MonoBehaviour
         {
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.gameObject == this.gameObject)
                 {
                     rend.material = outlineMaterial;
                 }
@@ -75,7 +92,7 @@ public class Ball_Player : MonoBehaviour
             }
         }
 
-        
+
         if (isDragging)
         {
             if (Input.GetMouseButton(0)) // 마우스의 위치를 실시간으로 저장
@@ -106,7 +123,5 @@ public class Ball_Player : MonoBehaviour
                 rend.material = originalMaterial;
             }
         }
-
-        
     }
 }
