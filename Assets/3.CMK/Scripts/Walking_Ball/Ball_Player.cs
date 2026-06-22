@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Build;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class Ball_Player : MonoBehaviour
@@ -10,9 +11,11 @@ public class Ball_Player : MonoBehaviour
     private float force = 1.0f;
     private float power;
     private float distance;
-    private float friction;
+    private float stop_p = 0.025f;
+    private float friction = 0.05f;
     private float time = 0.0f;
     private float current_time = 1.5f;
+
 
     public int order;
     public int score;
@@ -39,7 +42,31 @@ public class Ball_Player : MonoBehaviour
         isDragging = false;
     }
 
-    void AddScore(int amout)
+    void FixedUpdate()
+    {
+        ApplyFriction();
+    }
+
+    void ApplyFriction()
+    {
+        Vector3 vel = rb.linearVelocity;
+        Vector3 horizontalVel = new Vector3(vel.x, 0, vel.z);
+        float speed = horizontalVel.magnitude;
+        if (speed > 0.0f)
+        {
+            if (speed < stop_p)
+            {
+                rb.linearVelocity = new Vector3(0f, vel.y, 0f);
+            }
+            else
+            {
+                float decel = friction * Mathf.Abs(Physics.gravity.y);
+                Vector3 FrictionForce = -horizontalVel * decel * rb.mass;
+                rb.AddForce(FrictionForce);
+            }
+        }
+    }
+    public void AddScore(int amout)
     {
         score += amout;
     }
@@ -123,5 +150,15 @@ public class Ball_Player : MonoBehaviour
                 rend.material = originalMaterial;
             }
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DeathZone"))
+        {
+            FindObjectOfType<BallManager>().EliminatePlayer(this);
+            gameObject.SetActive(false);
+        }
+            
     }
 }

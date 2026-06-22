@@ -1,18 +1,18 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class Ball_timer : MonoBehaviour
 {
     public float time;
     public TMP_Text timertext;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    public bool IsTimeUp => time <= 0f; // 외부에서 시간 다 됐는지 쉽게 체크용
+
     void Start()
     {
         time = 60.0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
         Timer();
