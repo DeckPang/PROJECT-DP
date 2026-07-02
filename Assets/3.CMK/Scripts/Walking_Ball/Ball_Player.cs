@@ -9,12 +9,10 @@ public class Ball_Player : MonoBehaviour
     [Header("Player Force")]
     [SerializeField]
     private float force = 1.0f;
-    private float power;
     private float distance;
     private float stop_p = 0.025f;
     private float friction = 0.05f;
-    private float time = 0.0f;
-    private float current_time = 1.5f;
+    private float maxDistance = 15.0f;
 
 
     public int order;
@@ -28,6 +26,7 @@ public class Ball_Player : MonoBehaviour
     bool isDragging;
 
     private Vector3 EndPoint;
+    private BallManager ballManager;
 
     Rigidbody rb;
 
@@ -40,6 +39,8 @@ public class Ball_Player : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         isDragging = false;
+
+        ballManager = FindFirstObjectByType<BallManager>();
     }
 
     void FixedUpdate()
@@ -141,6 +142,8 @@ public class Ball_Player : MonoBehaviour
 
                 dir.y = 0.0f;
 
+                dir = Vector3.ClampMagnitude(dir, maxDistance);
+
                 rb.linearVelocity = Vector3.zero;
 
                 rb.AddForce(dir * force, ForceMode.Impulse);
@@ -156,7 +159,7 @@ public class Ball_Player : MonoBehaviour
     {
         if (other.CompareTag("DeathZone"))
         {
-            FindObjectOfType<BallManager>().EliminatePlayer(this);
+            ballManager.EliminatePlayer(this);
             gameObject.SetActive(false);
         }
             
