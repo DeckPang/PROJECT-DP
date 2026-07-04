@@ -834,13 +834,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94146235d73b01943994bc35a49e8bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  setting: {fileID: 11400000, guid: 9eb8747cfeaa47e4d91a4c6b4cf23478, type: 2}
   player: {fileID: 426442028}
-  moveDistance: 1
   KeyWordPrefabs: {fileID: 4977585985674443245, guid: 64e21ea38388ffd4e931e5c9f9165482, type: 3}
   uiDistance: {fileID: 1147345835}
-  Spacing: 100
-  StartCount: 4
-  TotalCount: 20
   CurrentCount: 0
 --- !u!4 &1165370037
 Transform:

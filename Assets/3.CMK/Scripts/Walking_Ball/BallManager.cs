@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class BallManager : MonoBehaviour
 {
-    public float radius = 5.0f;
+    [SerializeField]
+    private RoundSettings round_set;
 
     [SerializeField] private Ball_UI_Score ui_Score;
     [SerializeField] private Ball_timer ball_timer;
-
-    [Header("Score Settings")]
-    [SerializeField] private float scoreTickInterval = 1f; // 몇 초마다 1점씩 줄지
-    [SerializeField] private int winnerBonus = 100;
 
     private List<Ball_Player> players = new List<Ball_Player>();
     private List<Ball_Player> allplayers = new List<Ball_Player>();
@@ -41,7 +38,7 @@ public class BallManager : MonoBehaviour
             float angle = (360f / count) * player.order;
             float rad = angle * Mathf.Deg2Rad;
 
-            Vector3 pos = new Vector3(Mathf.Cos(rad) * radius, 1, Mathf.Sin(rad) * radius);
+            Vector3 pos = new Vector3(Mathf.Cos(rad) * round_set.radius, 1, Mathf.Sin(rad) * round_set.radius);
             objs[i].transform.position = pos;
 
             players.Add(player);
@@ -55,7 +52,7 @@ public class BallManager : MonoBehaviour
     {
         while (!roundEnded)
         {
-            yield return new WaitForSeconds(scoreTickInterval);
+            yield return new WaitForSeconds(round_set.scoreTickInterval);
 
             // 타이머가 0이 아니고(60초 안 지남), 2명 이상 남아있을 때만 점수 지급
             if (!ball_timer.IsTimeUp && players.Count > 1)
@@ -91,7 +88,7 @@ public class BallManager : MonoBehaviour
         if (roundEnded) return;
         roundEnded = true;
 
-        winner.AddScore(winnerBonus);
+        winner.AddScore(round_set.winnerBonus);
         Debug.Log("우승자: " + winner.name + " (+100점)");
         ui_Score.BallUpdateUI(allplayers);
     }

@@ -3,14 +3,17 @@ using TMPro;
 
 public class Ball_timer : MonoBehaviour
 {
-    public float time;
+    [SerializeField]
+    private RoundSettings round_set;
+
+    public float timer;
     public TMP_Text timertext;
 
-    public bool IsTimeUp => time <= 0f; // 외부에서 시간 다 됐는지 쉽게 체크용
+    public bool IsTimeUp => timer <= 0f; // 외부에서 시간 다 됐는지 쉽게 체크용
 
     void Start()
     {
-        time = 60.0f;
+        timer = round_set.time;
     }
 
     void Update()
@@ -20,14 +23,14 @@ public class Ball_timer : MonoBehaviour
 
     void Timer()
     {
-        if (time > 0)
+        if (timer > 0)
         {
-            time -= Time.deltaTime;
-            timertext.text = $"Time: {time:F0}";
+            timer -= Time.deltaTime;
+            timertext.text = $"Time: {timer:F0}";
         }
         else
         {
-            time = 0.0f;
+            timer = 0.0f;
             timertext.text = $"Time: 0";
         }
     }

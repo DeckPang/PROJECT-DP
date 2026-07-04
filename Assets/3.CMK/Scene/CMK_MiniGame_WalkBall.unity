@@ -257,11 +257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 300dc8e3a648cc54b863e2c6b34599a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 5
+  round_set: {fileID: 11400000, guid: 8a0bcdfb40451f24c9b81eb0add4a918, type: 2}
   ui_Score: {fileID: 901640574}
   ball_timer: {fileID: 339039573}
-  scoreTickInterval: 1
-  winnerBonus: 100
 --- !u!4 &339039572
 Transform:
   m_ObjectHideFlags: 0
@@ -289,7 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73137d991ed129549a4b505edc5bae28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0
+  round_set: {fileID: 11400000, guid: 8a0bcdfb40451f24c9b81eb0add4a918, type: 2}
+  timer: 0
   timertext: {fileID: 637806433}
 --- !u!1 &434574375
 GameObject:
@@ -638,7 +637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c534af3b3ecdc140ae2cff249ebaced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1
+  settings: {fileID: 11400000, guid: 83ba9a7825117ab40b227d2a7a05a1ee, type: 2}
   order: 0
   score: 0
   outlineMaterial: {fileID: 2100000, guid: d02587af0463a404480c36fabd125923, type: 2}
@@ -1132,7 +1131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c534af3b3ecdc140ae2cff249ebaced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1
+  settings: {fileID: 11400000, guid: 83ba9a7825117ab40b227d2a7a05a1ee, type: 2}
   order: 0
   score: 0
   outlineMaterial: {fileID: 2100000, guid: d02587af0463a404480c36fabd125923, type: 2}
@@ -1531,7 +1530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c534af3b3ecdc140ae2cff249ebaced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1
+  settings: {fileID: 11400000, guid: 83ba9a7825117ab40b227d2a7a05a1ee, type: 2}
   order: 0
   score: 0
   outlineMaterial: {fileID: 2100000, guid: d02587af0463a404480c36fabd125923, type: 2}
@@ -2051,7 +2050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c534af3b3ecdc140ae2cff249ebaced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 1
+  settings: {fileID: 11400000, guid: 83ba9a7825117ab40b227d2a7a05a1ee, type: 2}
   order: 0
   score: 0
   outlineMaterial: {fileID: 2100000, guid: d02587af0463a404480c36fabd125923, type: 2}
