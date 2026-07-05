@@ -5,7 +5,7 @@ public class BoardNode : MonoBehaviour
 {
     [Header("Node Info")]
     [SerializeField] private int nodeId;
-    [SerializeField] private BoardNodeType nodeType = BoardNodeType.Resource;
+    [SerializeField] private BoardNodeType nodeType = BoardNodeType.Blue;
 
     [Header("Connections")]
     [SerializeField] private List<BoardNode> nextNodes = new List<BoardNode>();
@@ -35,46 +35,183 @@ public class BoardNode : MonoBehaviour
         Debug.Log($"[Node {nodeId}] 설치된 함정 제거");
     }
 
-    public void OnPlayerArrived(PlayerPawn pawn)
+    /// <summary>
+    /// 플레이어가 이 노드에 도착했을 때 호출.
+    /// 나중에 강제이동/일반이동 분리할 수 있게 triggerTileEffect 플래그 추가.
+    /// </summary>
+    public void OnPlayerArrived(PlayerPawn pawn, bool triggerTileEffect = true)
     {
+        if (pawn == null)
+            return;
+
         Debug.Log($"[Node {nodeId}] {pawn.PawnName} 도착 | Type = {nodeType}");
 
-        LogNodeEffect(pawn);
+        // 설치형 함정은 우선 발동
         ResolveTrap(pawn);
-    }
 
-    private void LogNodeEffect(PlayerPawn pawn)
-    {
+        if (!triggerTileEffect)
+            return;
+
         switch (nodeType)
         {
             case BoardNodeType.Start:
-                Debug.Log($"[Node {nodeId}] Start 칸 도착/통과 처리 위치");
+                HandleStart(pawn);
                 break;
-            case BoardNodeType.Resource:
-                Debug.Log($"[Node {nodeId}] 재화 획득/손실 처리 위치");
+
+            case BoardNodeType.Blue:
+                HandleBlue(pawn);
                 break;
+
+            case BoardNodeType.Red:
+                HandleRed(pawn);
+                break;
+
             case BoardNodeType.CardDraw:
-                Debug.Log($"[Node {nodeId}] 카드 드로우 처리 위치");
+                HandleCardDraw(pawn);
                 break;
+
             case BoardNodeType.Battle:
-                Debug.Log($"[Node {nodeId}] 전투/공격 처리 위치");
+                HandleBattle(pawn);
                 break;
+
             case BoardNodeType.Trap:
-                Debug.Log($"[Node {nodeId}] 함정 칸 처리 위치");
+                HandleTrapNode(pawn);
                 break;
+
             case BoardNodeType.Event:
-                Debug.Log($"[Node {nodeId}] 랜덤 이벤트 처리 위치");
+                HandleEvent(pawn);
                 break;
+
             case BoardNodeType.Shop:
-                Debug.Log($"[Node {nodeId}] 상점 처리 위치");
+                HandleShop(pawn);
                 break;
-            case BoardNodeType.Jail:
-                Debug.Log($"[Node {nodeId}] 감옥 처리 위치");
+
+            case BoardNodeType.RedCard:
+                HandleRedCard(pawn);
                 break;
+
             case BoardNodeType.Roulette:
-                Debug.Log($"[Node {nodeId}] 룰렛 처리 위치");
+                HandleRoulette(pawn);
+                break;
+
+            case BoardNodeType.Branch:
+                HandleBranch(pawn);
+                break;
+
+            case BoardNodeType.Heal:
+                HandleHeal(pawn);
+                break;
+
+            case BoardNodeType.LunchBox:
+                HandleLunchBox(pawn);
+                break;
+
+            case BoardNodeType.Rest:
+                HandleRest(pawn);
                 break;
         }
+    }
+
+    private void HandleStart(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] START 도착/통과. 추후 최대 마나 증가 연결 위치");
+    }
+
+    private void HandleBlue(PlayerPawn pawn)
+    {
+        ApplyCoinChange(pawn, +5, "Blue");
+    }
+
+    private void HandleRed(PlayerPawn pawn)
+    {
+        ApplyCoinChange(pawn, -5, "Red");
+    }
+
+    private void HandleCardDraw(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] CardDraw 도착 - 추후 공용 덱 1장 드로우 연결 위치");
+    }
+
+    private void HandleBattle(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Battle 도착 - 추후 전투/공격 처리 연결 위치");
+    }
+
+    private void HandleTrapNode(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Trap 칸 도착 - 추후 맵 패널티 처리 연결 위치");
+    }
+
+    private void HandleEvent(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Event 도착 - 추후 랜덤 이벤트 처리 연결 위치");
+    }
+
+    private void HandleShop(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Shop 도착 - 추후 상점 UI/구매 처리 연결 위치");
+    }
+
+    private void HandleRedCard(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] RedCard 도착 - 다음 턴 전체 스킵 연결 필요");
+    }
+
+    private void HandleRoulette(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Roulette 도착 - 추후 룰렛 처리 연결 위치");
+    }
+
+    private void HandleBranch(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Branch 도착 - nextNodes 2개 이상이면 분기 처리");
+    }
+
+    private void HandleHeal(PlayerPawn pawn)
+    {
+        ApplyHpChange(pawn, +1, "Heal");
+    }
+
+    private void HandleLunchBox(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] LunchBox 도착 - 추후 고밸류 카드 1장 획득 연결 위치");
+    }
+
+    private void HandleRest(PlayerPawn pawn)
+    {
+        Debug.Log($"[Node {nodeId}] Rest 도착 - 다음 턴 행동 제한 연결 필요");
+    }
+
+    private void ApplyCoinChange(PlayerPawn pawn, int amount, string source)
+    {
+        if (pawn == null)
+            return;
+
+        var info = pawn.CharacterInfo;
+        if (info == null)
+        {
+            Debug.LogWarning($"[Node {nodeId}] {source} 처리 실패 - CharacterInfo가 없습니다.");
+            return;
+        }
+
+        info.ChangeCoins(amount);
+        Debug.Log($"[Node {nodeId}] {source} 처리 -> 코인 {(amount >= 0 ? "+" : "")}{amount} | 현재 코인: {info.Coins}");
+    }
+
+    private void ApplyHpChange(PlayerPawn pawn, int amount, string source)
+    {
+        if (pawn == null)
+            return;
+
+        var info = pawn.CharacterInfo;
+        if (info == null)
+        {
+            Debug.LogWarning($"[Node {nodeId}] {source} 처리 실패 - CharacterInfo가 없습니다.");
+            return;
+        }
+
+        info.ChangeHp(amount);
+        Debug.Log($"[Node {nodeId}] {source} 처리 -> HP {(amount >= 0 ? "+" : "")}{amount} | 현재 HP: {info.Hp}");
     }
 
     private void ResolveTrap(PlayerPawn pawn)
@@ -85,11 +222,12 @@ public class BoardNode : MonoBehaviour
         switch (installedTrap)
         {
             case TrapType.BananaPeel:
-                Debug.Log($"[Trap] {pawn.PawnName} 이(가) 바나나 껍질 발동. 추후 후퇴 처리 연결 예정");
+                Debug.Log($"[Trap] {pawn.PawnName} 이(가) 바나나 껍질 발동. 추후 3~4칸 후퇴 처리 연결 예정");
                 break;
 
             case TrapType.FakeTrophy:
-                Debug.Log($"[Trap] {pawn.PawnName} 이(가) 가짜 트로피 발동. 추후 코인 감소 처리 연결 예정");
+                Debug.Log($"[Trap] {pawn.PawnName} 이(가) 가짜 트로피 발동.");
+                ApplyCoinChange(pawn, -5, "FakeTrophy Trap");
                 break;
         }
 
