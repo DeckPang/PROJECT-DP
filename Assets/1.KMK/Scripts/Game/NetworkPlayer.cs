@@ -26,6 +26,22 @@ public class NetworkPlayer : NetworkBehaviour
 
     [Networked] public NetworkBool BasicWalkUsedThisTurn { get; set; }
 
+    /// <summary>획득한 트로피 수. 3개 먼저 모으면 승리(기획서). Host만 증가. 트로피는 코인으로 구매(마리오파티식).</summary>
+    [Networked, OnChangedRender(nameof(OnTrophiesChanged))]
+    public int Trophies { get; set; }
+
+    /// <summary>보유 코인. 미니게임 순위 보상으로 획득, 트로피 구매에 사용. Host만 변경.</summary>
+    [Networked, OnChangedRender(nameof(OnCoinsChanged))]
+    public int Coins { get; set; }
+
+    /// <summary>한 칸씩 순차 이동을 제어하는 타이머 (Host 전용 진행).</summary>
+    [Networked] private TickTimer StepTimer { get; set; }
+
+    [Tooltip("한 칸(노드) 전진 사이의 간격(초). 말(PlayerPawnView) 이동 연출과 맞추세요.")]
+    [SerializeField] private float stepInterval = 0.35f;
+
+    private BoardManager _boardMgr;
+
     public const int HandCapacity = 11; // 5였는데 11로 수정함 - 여영부
     public const int FixedHandIndex = 0;  //추가
     public const string BasicWalkCardId = "basic_walk"; //추가
@@ -56,6 +72,12 @@ public class NetworkPlayer : NetworkBehaviour
 
     /// <summary>HandCards가 변경됐을 때 호출.</summary>
     public event Action HandChanged;
+
+    /// <summary>Trophies가 변경됐을 때 호출.</summary>
+    public event Action TrophiesChanged;
+
+    /// <summary>Coins가 변경됐을 때 호출.</summary>
+    public event Action CoinsChanged;
 
     // ── 생명주기 ─────────────────────────────────────────────────────
 
@@ -212,6 +234,9 @@ public class NetworkPlayer : NetworkBehaviour
         }
 
         Debug.Log($"[NetworkPlayer] Slot {SlotIndex} used card '{cardId}'");
+
+        // 카드 사용 시마다 턴 제한 시간 +10초 (기획서 2.3.2)
+        FindAnyObjectByType<GameSession>()?.ExtendTurn(GameSession.CardExtendSeconds);
     }
 
     private bool UseDrawCardEffect(int count)
@@ -270,44 +295,70 @@ public class NetworkPlayer : NetworkBehaviour
         PendingSteps     = Mathf.Max(0, PendingSteps - 1);
         IsAwaitingBranch = false;
 
-        ProcessNextStep();
+        // 남은 칸이 있으면 다음 칸부터 이어서 한 칸씩 진행. 없으면 도착 처리.
+        if (PendingSteps > 0)
+            StepTimer = TickTimer.CreateFromSeconds(Runner, stepInterval);
+        else
+            OnLanded();
     }
 
-    /// <summary>Host 전용 — PendingSteps만큼 외길로 진행, 분기 만나면 대기 상태로 진입.</summary>
-    private void ProcessNextStep()
+    /// <summary>Host 전용 — 한 칸(노드)씩 순차 이동. 분기 만나면 대기 상태로 진입.</summary>
+    public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
+        if (PendingSteps <= 0) return;
+        if (IsAwaitingBranch) return;
+        if (!StepTimer.ExpiredOrNotRunning(Runner)) return;
 
-        var boardMgr = FindAnyObjectByType<BoardManager>();
-        if (boardMgr == null) return;
+        StepOnce();
 
-        while (PendingSteps > 0)
+        // 아직 이동이 남았고 분기 대기가 아니면 다음 칸을 위한 간격을 재설정.
+        if (PendingSteps > 0 && !IsAwaitingBranch)
+            StepTimer = TickTimer.CreateFromSeconds(Runner, stepInterval);
+    }
+
+    /// <summary>Host 전용 — 현재 노드에서 한 칸 전진(외길) 또는 분기 대기 진입.</summary>
+    private void StepOnce()
+    {
+        if (_boardMgr == null)
+            _boardMgr = FindAnyObjectByType<BoardManager>();
+        if (_boardMgr == null) { PendingSteps = 0; return; }
+
+        var node = _boardMgr.GetNodeById(CurrentNodeId);
+        if (node == null || node.NextNodes == null || node.NextNodes.Count == 0)
         {
-            var node = boardMgr.GetNodeById(CurrentNodeId);
-            if (node == null || node.NextNodes == null || node.NextNodes.Count == 0)
-            {
-                // 더 이상 갈 수 없음
-                PendingSteps = 0;
-                Debug.Log($"[NetworkPlayer] Slot {SlotIndex} dead-end at Node {CurrentNodeId}");
-                return;
-            }
-
-            if (node.NextNodes.Count == 1)
-            {
-                // 외길 — 자동 진행
-                CurrentNodeId = node.NextNodes[0].NodeId;
-                PendingSteps--;
-            }
-            else
-            {
-                // 분기 — 입력 대기
-                IsAwaitingBranch = true;
-                Debug.Log($"[NetworkPlayer] Slot {SlotIndex} awaiting branch at Node {CurrentNodeId} (steps left: {PendingSteps})");
-                return;
-            }
+            // 더 이상 갈 수 없음
+            PendingSteps = 0;
+            Debug.Log($"[NetworkPlayer] Slot {SlotIndex} dead-end at Node {CurrentNodeId}");
+            return;
         }
 
-        Debug.Log($"[NetworkPlayer] Slot {SlotIndex} move complete → Node {CurrentNodeId}");
+        if (node.NextNodes.Count == 1)
+        {
+            // 외길 — 한 칸 전진
+            CurrentNodeId = node.NextNodes[0].NodeId;
+            PendingSteps--;
+
+            if (PendingSteps == 0)
+            {
+                Debug.Log($"[NetworkPlayer] Slot {SlotIndex} move complete → Node {CurrentNodeId}");
+                OnLanded();
+            }
+        }
+        else
+        {
+            // 분기 — 입력 대기
+            IsAwaitingBranch = true;
+            Debug.Log($"[NetworkPlayer] Slot {SlotIndex} awaiting branch at Node {CurrentNodeId} (steps left: {PendingSteps})");
+        }
+    }
+
+    /// <summary>Host — 이동을 마치고 최종 칸에 도착했을 때의 도착 효과 훅 (현재: 트로피 노드 구매).</summary>
+    private void OnLanded()
+    {
+        if (!HasStateAuthority) return;
+        var session = FindAnyObjectByType<GameSession>();
+        session?.TryBuyTrophyAt(this);
     }
 
     // ── 손패 조작 (Host 전용) ────────────────────────────────────────
@@ -498,7 +549,8 @@ public class NetworkPlayer : NetworkBehaviour
         PendingSteps = steps;
 
         if (steps > 0)
-            ProcessNextStep();
+            // 첫 칸부터 바로 시작하도록 타이머를 만료 상태로 세팅 → FixedUpdateNetwork가 한 칸씩 진행.
+            StepTimer = TickTimer.CreateFromSeconds(Runner, 0f);
         else
             Debug.Log($"[NetworkPlayer] Slot {SlotIndex} used move card with 0 steps.");
 
@@ -520,5 +572,42 @@ public class NetworkPlayer : NetworkBehaviour
     private void OnHandChanged()
     {
         HandChanged?.Invoke();
+    }
+
+    private void OnTrophiesChanged()
+    {
+        TrophiesChanged?.Invoke();
+    }
+
+    private void OnCoinsChanged()
+    {
+        CoinsChanged?.Invoke();
+    }
+
+    /// <summary>Host 전용 — 트로피 지급.</summary>
+    public void AddTrophy(int amount = 1)
+    {
+        if (!HasStateAuthority) return;
+        if (amount <= 0) return;
+        Trophies += amount;
+        Debug.Log($"[NetworkPlayer] Slot {SlotIndex} 트로피 +{amount} → 총 {Trophies}");
+    }
+
+    /// <summary>Host 전용 — 코인 지급.</summary>
+    public void AddCoins(int amount)
+    {
+        if (!HasStateAuthority) return;
+        if (amount <= 0) return;
+        Coins += amount;
+    }
+
+    /// <summary>Host 전용 — 코인 소비. 부족하면 false.</summary>
+    public bool TrySpendCoins(int cost)
+    {
+        if (!HasStateAuthority) return false;
+        if (cost <= 0) return false;
+        if (Coins < cost) return false;
+        Coins -= cost;
+        return true;
     }
 }
