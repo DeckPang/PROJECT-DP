@@ -71,7 +71,18 @@ public class GameController : MonoBehaviour, INetworkRunnerCallbacks
 
         // Client: 이미 도착해 있으면 바로 바인딩
         var found = FindAnyObjectByType<GameSession>();
-        if (found != null) { BindSession(found); return; }
+        if (found != null)
+        {
+            BindSession(found);
+
+            var foundDeck = FindAnyObjectByType<GameDeck>();
+            if (foundDeck != null) BindDeck(foundDeck);
+
+            // 미니게임에서 돌아온 Host만 보상 지급과 다음 라운드 시작을 수행합니다.
+            if (_runner.IsServer)
+                found.ResumeBoardAfterMiniGame();
+            return;
+        }
 
         // Host: 비동기 Spawn (Fusion이 프리팹 로딩을 비동기로 처리하는 경우 안전)
         if (_runner.IsServer && gameSessionPrefab != null)

@@ -54,6 +54,10 @@ public class GameDebugUI : MonoBehaviour
         NetworkPlayer.OnSpawnedStatic   += OnPlayerSpawned;
         NetworkPlayer.OnDespawnedStatic += OnPlayerDespawned;
 
+        // 미니게임에서 복귀한 NetworkPlayer는 다시 Spawn되지 않으므로 직접 수집합니다.
+        foreach (var player in FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None))
+            OnPlayerSpawned(player);
+
         UpdateUI();
     }
 

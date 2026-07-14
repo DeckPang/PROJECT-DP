@@ -2,6 +2,16 @@ using System;
 using Fusion;
 using UnityEngine;
 
+public enum GamePhase : byte
+{
+    Board,
+    LoadingMiniGame,
+    MiniGame,
+    ShowingMiniGameResult,
+    LoadingBoard,
+    GameOver,
+}
+
 /// <summary>
 /// 게임 씬의 최상위 NetworkBehaviour. Host가 1개만 Spawn.
 /// 턴 진행/페이즈/타이머 등 게임 전체 상태를 보유합니다.
@@ -10,6 +20,11 @@ public class GameSession : NetworkBehaviour
 {
     /// <summary>Phase 1.3까지 임시 — 추후 NetworkPlayer 수로 대체.</summary>
     public const int MaxSlots = 4;
+    public const int GameSceneBuildIndex = 1;
+    public const int KeyWordMiniGameSceneBuildIndex = 2;
+    public const int MiniGameTargetCount = 20;
+    public const float MiniGameDurationSeconds = 30f;
+    public const float MiniGameResultSeconds = 3f;
 
     // ── Networked 상태 ───────────────────────────────────────────────
 
@@ -26,9 +41,25 @@ public class GameSession : NetworkBehaviour
     /// <summary>이번 라운드에서 지금까지 종료된 턴 수 (Host 집계용).</summary>
     [Networked] public int TurnsThisRound { get; set; }
 
+    [Networked, OnChangedRender(nameof(OnPhaseChanged))]
+    public GamePhase Phase { get; set; }
+
+    [Networked] public int MiniGameSeed { get; set; }
+    [Networked] public int MiniGameFinishedCount { get; set; }
+    [Networked] private int RankedTurnCursor { get; set; }
+    [Networked] private NetworkBool UseRankedTurnOrder { get; set; }
+
+    [Networked, Capacity(MaxSlots), OnChangedRender(nameof(OnMiniGameStateChanged))]
+    public NetworkArray<int> MiniGameRanking => default;
+
+    [Networked] private TickTimer MiniGameTimer { get; set; }
+    [Networked] private TickTimer MiniGameResultTimer { get; set; }
+
     // ── 이벤트 (UI 구독용) ───────────────────────────────────────────
 
     public event Action TurnChanged;
+    public event Action PhaseChanged;
+    public event Action MiniGameStateChanged;
 
     /// <summary>한 라운드가 완료된 직후(= 미니게임 트리거 지점). 인자: 방금 완료된 라운드 번호. 모든 클라에서 발생.</summary>
     public event Action<int> RoundCompleted;
@@ -65,12 +96,16 @@ public class GameSession : NetworkBehaviour
 
     /// <summary>현재 턴 남은 시간(초). 타이머 미작동 시 0. 모든 클라에서 조회 가능.</summary>
     public float TurnSecondsRemaining => TurnTimer.RemainingTime(Runner) ?? 0f;
+    public float MiniGameSecondsRemaining => MiniGameTimer.RemainingTime(Runner) ?? 0f;
 
     // ── 생명주기 ─────────────────────────────────────────────────────
 
     public override void Spawned()
     {
         Debug.Log($"[GameSession] Spawned (HasStateAuthority={HasStateAuthority})");
+
+        // 보드와 미니게임 씬을 오가더라도 네트워크 게임 상태는 유지합니다.
+        Runner.MakeDontDestroyOnLoad(gameObject);
 
         // GameController에 자신을 알림 (Client 동기화 타이밍 안전판)
         var ctrl = FindAnyObjectByType<GameController>();
@@ -84,6 +119,13 @@ public class GameSession : NetworkBehaviour
             RoundNumber     = 1;
             TurnsThisRound  = 0;
             WinnerSlot      = -1;
+            Phase           = GamePhase.Board;
+            MiniGameSeed    = 0;
+            MiniGameFinishedCount = 0;
+            RankedTurnCursor = 0;
+            UseRankedTurnOrder = false;
+            for (int i = 0; i < MaxSlots; i++)
+                MiniGameRanking.Set(i, -1);
             PickRandomTrophyNode();
             StartTurnTimer();
         }
@@ -98,6 +140,7 @@ public class GameSession : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
         if (WinnerSlot >= 0) return;   // 이미 게임 종료
+        if (Phase != GamePhase.Board) return;
 
         // 방금 끝난 턴을 라운드 카운트에 반영. 점유된 모든 슬롯이 한 턴씩 끝내면 라운드 완료 → 미니게임 트리거.
         TurnsThisRound++;
@@ -108,9 +151,7 @@ public class GameSession : NetworkBehaviour
             RoundNumber++;   // OnChangedRender(OnRoundChanged) → 모든 클라에 RoundCompleted 발생
             Debug.Log($"[GameSession] 라운드 {RoundNumber - 1} 완료 → 미니게임");
 
-            // 미니게임 순위별 코인 보상 + 1등 슬롯 반환. 다음 라운드는 1등부터 시작(선공).
-            int firstSlot = ResolveMiniGameRewards();
-            StartNextRoundFrom(firstSlot);
+            BeginMiniGameTransition();
             return;
         }
 
@@ -120,6 +161,24 @@ public class GameSession : NetworkBehaviour
     /// <summary>점유된 다음 슬롯으로 턴을 넘김 (라운드 내 일반 진행).</summary>
     private void AdvanceToNextOccupied()
     {
+        if (UseRankedTurnOrder)
+        {
+            for (int rank = RankedTurnCursor + 1; rank < MaxSlots; rank++)
+            {
+                int rankedSlot = MiniGameRanking[rank];
+                var rankedPlayer = FindPlayerInSlot(rankedSlot);
+                if (rankedPlayer == null) continue;
+
+                RankedTurnCursor = rank;
+                CurrentTurnSlot = rankedSlot;
+                TurnNumber++;
+                Debug.Log($"[GameSession] Turn {TurnNumber} → Rank {rank + 1}, Slot {rankedSlot}");
+                rankedPlayer.PrepareTurnStart();
+                StartTurnTimer();
+                return;
+            }
+        }
+
         for (int step = 1; step <= MaxSlots; step++)
         {
             int next = (CurrentTurnSlot + step) % MaxSlots;
@@ -138,15 +197,23 @@ public class GameSession : NetworkBehaviour
         Debug.LogWarning("[GameSession] 점유된 슬롯이 없어 턴을 넘길 수 없음.");
     }
 
-    /// <summary>다음 라운드를 지정 슬롯(미니게임 1등)부터 시작 — 선공 보상.</summary>
-    private void StartNextRoundFrom(int slot)
+    /// <summary>미니게임 순위대로 다음 라운드를 시작합니다.</summary>
+    private void StartNextRoundFromRanking()
     {
+        int slot = MiniGameRanking[0];
         var first = FindPlayerInSlot(slot);
-        if (first == null) { AdvanceToNextOccupied(); return; }
+        if (first == null)
+        {
+            UseRankedTurnOrder = false;
+            AdvanceToNextOccupied();
+            return;
+        }
 
+        UseRankedTurnOrder = true;
+        RankedTurnCursor = 0;
         CurrentTurnSlot = slot;
         TurnNumber++;
-        Debug.Log($"[GameSession] 라운드 {RoundNumber} 시작 → 선공 Slot {slot}");
+        Debug.Log($"[GameSession] 라운드 {RoundNumber} 시작 → 미니게임 1등 Slot {slot} 선공");
         first.PrepareTurnStart();
         StartTurnTimer();
     }
@@ -157,6 +224,25 @@ public class GameSession : NetworkBehaviour
     {
         if (!HasStateAuthority) return;
         if (WinnerSlot >= 0) return;
+
+        if (Phase == GamePhase.MiniGame)
+        {
+            if (MiniGameTimer.Expired(Runner))
+                CompleteMiniGameWithTimeout();
+            return;
+        }
+
+        if (Phase == GamePhase.ShowingMiniGameResult)
+        {
+            if (MiniGameResultTimer.Expired(Runner))
+            {
+                Phase = GamePhase.LoadingBoard;
+                Runner.LoadScene(SceneRef.FromIndex(GameSceneBuildIndex));
+            }
+            return;
+        }
+
+        if (Phase != GamePhase.Board) return;
         if (!TurnTimer.Expired(Runner)) return;
 
         // 현재 플레이어가 이동/분기 중이면 끝날 때까지 자동 종료 보류.
@@ -186,6 +272,115 @@ public class GameSession : NetworkBehaviour
         Debug.Log($"[GameSession] 턴 시간 +{seconds:0}s → {remaining + seconds:0.0}s 남음");
     }
 
+    private void BeginMiniGameTransition()
+    {
+        if (!HasStateAuthority) return;
+
+        Phase = GamePhase.LoadingMiniGame;
+        TurnTimer = default;
+        MiniGameTimer = default;
+        MiniGameResultTimer = default;
+        MiniGameSeed = UnityEngine.Random.Range(1, int.MaxValue);
+        MiniGameFinishedCount = 0;
+        RankedTurnCursor = 0;
+        UseRankedTurnOrder = false;
+
+        for (int i = 0; i < MaxSlots; i++)
+            MiniGameRanking.Set(i, -1);
+
+        foreach (var player in FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None))
+            player.ResetMiniGameState();
+
+        Debug.Log($"[GameSession] KeyWord 미니게임 씬 로드 (seed={MiniGameSeed})");
+        Runner.LoadScene(SceneRef.FromIndex(KeyWordMiniGameSceneBuildIndex));
+    }
+
+    /// <summary>KeyWord 씬이 준비된 뒤 Host가 호출합니다.</summary>
+    public void BeginMiniGameRound()
+    {
+        if (!HasStateAuthority || Phase != GamePhase.LoadingMiniGame) return;
+
+        Phase = GamePhase.MiniGame;
+        MiniGameTimer = TickTimer.CreateFromSeconds(Runner, MiniGameDurationSeconds);
+        Debug.Log($"[GameSession] KeyWord 미니게임 시작 ({MiniGameDurationSeconds:0}초)");
+    }
+
+    /// <summary>Host와 클라이언트가 동일하게 계산하는 슬롯별 WASD 정답입니다.</summary>
+    public int GetExpectedMiniGameKey(int slot, int progress)
+    {
+        unchecked
+        {
+            uint value = (uint)MiniGameSeed;
+            value ^= (uint)(slot + 1) * 0x9E3779B9u;
+            value ^= (uint)(progress + 1) * 0x85EBCA6Bu;
+            value ^= value >> 16;
+            value *= 0x7FEB352Du;
+            value ^= value >> 15;
+            return (int)(value % 4u);
+        }
+    }
+
+    public void RegisterMiniGameFinish(NetworkPlayer player)
+    {
+        if (!HasStateAuthority || Phase != GamePhase.MiniGame || player == null) return;
+        if (player.MiniGameRank > 0) return;
+
+        int rank = MiniGameFinishedCount + 1;
+        MiniGameFinishedCount = rank;
+        player.SetMiniGameRank(rank);
+        MiniGameRanking.Set(rank - 1, player.SlotIndex);
+        Debug.Log($"[GameSession] KeyWord {rank}등 = Slot {player.SlotIndex}");
+
+        if (MiniGameFinishedCount >= CountOccupiedSlots())
+            CompleteMiniGame();
+    }
+
+    private void CompleteMiniGameWithTimeout()
+    {
+        var unfinished = new System.Collections.Generic.List<NetworkPlayer>();
+        foreach (var player in FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None))
+        {
+            if (player != null && player.MiniGameRank <= 0)
+                unfinished.Add(player);
+        }
+
+        unfinished.Sort((a, b) =>
+        {
+            int progressOrder = b.MiniGameProgress.CompareTo(a.MiniGameProgress);
+            return progressOrder != 0 ? progressOrder : a.SlotIndex.CompareTo(b.SlotIndex);
+        });
+
+        foreach (var player in unfinished)
+        {
+            int rank = MiniGameFinishedCount + 1;
+            MiniGameFinishedCount = rank;
+            player.SetMiniGameRank(rank);
+            MiniGameRanking.Set(rank - 1, player.SlotIndex);
+        }
+
+        CompleteMiniGame();
+    }
+
+    private void CompleteMiniGame()
+    {
+        if (!HasStateAuthority || Phase != GamePhase.MiniGame) return;
+
+        MiniGameTimer = default;
+        Phase = GamePhase.ShowingMiniGameResult;
+        MiniGameResultTimer = TickTimer.CreateFromSeconds(Runner, MiniGameResultSeconds);
+        Debug.Log("[GameSession] KeyWord 미니게임 종료 → 결과 표시 후 보드 복귀");
+    }
+
+    /// <summary>Game 씬이 다시 로드된 뒤 Host가 보상과 다음 라운드를 시작합니다.</summary>
+    public void ResumeBoardAfterMiniGame()
+    {
+        if (!HasStateAuthority || Phase != GamePhase.LoadingBoard) return;
+
+        ResolveMiniGameRewards();
+        Phase = GamePhase.Board;
+        StartNextRoundFromRanking();
+    }
+
     private static NetworkPlayer FindPlayerInSlot(int slot)
     {
         var players = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
@@ -204,33 +399,23 @@ public class GameSession : NetworkBehaviour
     private static readonly int[] MiniGameCoinsByRank = { 10, 6, 3, 0 };
 
     /// <summary>
-    /// 라운드 완료 시 미니게임 결과 처리 (Host 전용). 순위별 코인 지급 + 1등 슬롯 반환(선공용).
-    /// 슬라이스1(현재): 순위를 랜덤 산출(스텁). 슬라이스2(예정): 실제 미니게임 씬 결과로 교체.
+    /// KeyWord 미니게임의 확정 순위에 따라 코인을 지급합니다.
     /// 트로피는 여기서 주지 않음 — 맵의 트로피 노드에서 코인으로 구매(마리오파티식).
     /// </summary>
-    private int ResolveMiniGameRewards()
+    private void ResolveMiniGameRewards()
     {
-        if (!HasStateAuthority) return CurrentTurnSlot;
+        if (!HasStateAuthority) return;
 
-        var players = new System.Collections.Generic.List<NetworkPlayer>(
-            FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None));
-        if (players.Count == 0) return CurrentTurnSlot;
-
-        // 스텁: 랜덤 순위 (슬라이스2에서 실제 미니게임 결과로 교체)
-        for (int i = 0; i < players.Count; i++)
+        for (int rank = 0; rank < MaxSlots; rank++)
         {
-            int j = UnityEngine.Random.Range(i, players.Count);
-            (players[i], players[j]) = (players[j], players[i]);
-        }
+            int slot = MiniGameRanking[rank];
+            var player = FindPlayerInSlot(slot);
+            if (player == null) continue;
 
-        for (int rank = 0; rank < players.Count; rank++)
-        {
             int coins = rank < MiniGameCoinsByRank.Length ? MiniGameCoinsByRank[rank] : 0;
-            if (coins > 0) players[rank].AddCoins(coins);
-            Debug.Log($"[GameSession] 미니게임 {rank + 1}등 = Slot {players[rank].SlotIndex} (+{coins} 코인)");
+            if (coins > 0) player.AddCoins(coins);
+            Debug.Log($"[GameSession] 미니게임 {rank + 1}등 = Slot {slot} (+{coins} 코인)");
         }
-
-        return players[0].SlotIndex;   // 1등 → 다음 라운드 선공
     }
 
     /// <summary>트로피를 놓을 노드를 무작위로 선택 (Host 전용). Start 칸과 현재 위치는 제외.</summary>
@@ -290,6 +475,7 @@ public class GameSession : NetworkBehaviour
             if (p != null && p.Trophies >= TrophiesToWin)
             {
                 WinnerSlot = p.SlotIndex;
+                Phase = GamePhase.GameOver;
                 Debug.Log($"[GameSession] 게임 종료! 승자 = Slot {WinnerSlot} (트로피 {p.Trophies})");
                 return;
             }
@@ -333,5 +519,15 @@ public class GameSession : NetworkBehaviour
     private void OnTrophyNodeChanged()
     {
         TrophyNodeChanged?.Invoke();
+    }
+
+    private void OnPhaseChanged()
+    {
+        PhaseChanged?.Invoke();
+    }
+
+    private void OnMiniGameStateChanged()
+    {
+        MiniGameStateChanged?.Invoke();
     }
 }

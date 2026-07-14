@@ -36,6 +36,8 @@ public class GameDeck : NetworkBehaviour
     {
         Debug.Log($"[GameDeck] Spawned (HasStateAuthority={HasStateAuthority})");
 
+        Runner.MakeDontDestroyOnLoad(gameObject);
+
         // 모든 클라이언트가 CardLibrary 등록 (스크립터블 자산은 동일하므로 안전)
         CardLibrary.RegisterAll(allCards);
 

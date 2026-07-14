@@ -34,6 +34,13 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked, OnChangedRender(nameof(OnCoinsChanged))]
     public int Coins { get; set; }
 
+    [Networked, OnChangedRender(nameof(OnMiniGameStateChanged))]
+    public int MiniGameProgress { get; set; }
+
+    /// <summary>0이면 미완주, 1~4는 확정 순위.</summary>
+    [Networked, OnChangedRender(nameof(OnMiniGameStateChanged))]
+    public int MiniGameRank { get; set; }
+
     /// <summary>한 칸씩 순차 이동을 제어하는 타이머 (Host 전용 진행).</summary>
     [Networked] private TickTimer StepTimer { get; set; }
 
@@ -78,6 +85,7 @@ public class NetworkPlayer : NetworkBehaviour
 
     /// <summary>Coins가 변경됐을 때 호출.</summary>
     public event Action CoinsChanged;
+    public event Action MiniGameStateChanged;
 
     // ── 생명주기 ─────────────────────────────────────────────────────
 
@@ -85,6 +93,8 @@ public class NetworkPlayer : NetworkBehaviour
     {
         Debug.Log($"[NetworkPlayer] Slot {SlotIndex} | Name '{PlayerName}' | Owner {Owner} | " +
                   $"HasInput={HasInputAuthority}, HasState={HasStateAuthority}");
+
+        Runner.MakeDontDestroyOnLoad(gameObject);
 
         // Host: 시작 노드로 초기화 + 현재 턴이면 TurnGranted 지급
         //if (HasStateAuthority)
@@ -273,6 +283,34 @@ public class NetworkPlayer : NetworkBehaviour
         {
             deck.AddToDiscard(cardId);
         }
+    }
+
+    /// <summary>KeyWord 입력을 Host가 검증하고 진행도를 올립니다. 0=W, 1=A, 2=S, 3=D.</summary>
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SubmitMiniGameKey(int keyIndex)
+    {
+        var session = FindAnyObjectByType<GameSession>();
+        if (session == null || session.Phase != GamePhase.MiniGame) return;
+        if (MiniGameRank > 0 || MiniGameProgress >= GameSession.MiniGameTargetCount) return;
+        if (keyIndex < 0 || keyIndex > 3) return;
+        if (keyIndex != session.GetExpectedMiniGameKey(SlotIndex, MiniGameProgress)) return;
+
+        MiniGameProgress++;
+        if (MiniGameProgress >= GameSession.MiniGameTargetCount)
+            session.RegisterMiniGameFinish(this);
+    }
+
+    public void ResetMiniGameState()
+    {
+        if (!HasStateAuthority) return;
+        MiniGameProgress = 0;
+        MiniGameRank = 0;
+    }
+
+    public void SetMiniGameRank(int rank)
+    {
+        if (!HasStateAuthority) return;
+        MiniGameRank = rank;
     }
     //-- 여기까지 함수추가함
     /// <summary>분기 노드에서 길 선택. IsAwaitingBranch일 때만 유효.</summary>
@@ -535,7 +573,9 @@ public class NetworkPlayer : NetworkBehaviour
     private bool IsCurrentTurnOnHost()
     {
         var session = FindAnyObjectByType<GameSession>();
-        return session != null && session.CurrentTurnSlot == SlotIndex;
+        return session != null &&
+               session.Phase == GamePhase.Board &&
+               session.CurrentTurnSlot == SlotIndex;
     }
 
     private bool TryStartMoveState(int steps)
@@ -582,6 +622,11 @@ public class NetworkPlayer : NetworkBehaviour
     private void OnCoinsChanged()
     {
         CoinsChanged?.Invoke();
+    }
+
+    private void OnMiniGameStateChanged()
+    {
+        MiniGameStateChanged?.Invoke();
     }
 
     /// <summary>Host 전용 — 트로피 지급.</summary>
