@@ -17,7 +17,7 @@ public class RPS_LogUi : MonoBehaviour
         if (lines.Count > maxline)
             lines.RemoveAt(0);
 
-        logText.text = string.Join(" ", lines);
+        logText.text = string.Join("\n", lines);
     }
 
     public void Clear()

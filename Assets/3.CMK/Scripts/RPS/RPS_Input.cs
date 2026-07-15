@@ -12,6 +12,12 @@ public class RPS_Input : MonoBehaviour
 
     public void SetInteractable(bool value)
     {
+        if (rockButton == null || paperButton == null || scissorsButton == null)
+        {
+            Debug.LogError($"{gameObject.name}의 버튼 참조가 비어있습니다!");
+            return;
+        }
+
         rockButton.interactable = value;
         paperButton.interactable = value;
         scissorsButton.interactable = value;

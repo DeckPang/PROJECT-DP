@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 29923200}
   - component: {fileID: 29923199}
   m_Layer: 5
-  m_Name: Rock
+  m_Name: Rock_P3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,7 +155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -600, y: -375}
+  m_AnchoredPosition: {x: -600, y: -62}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &29923199
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741480094}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickRock
         m_Mode: 1
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 32970040}
   - component: {fileID: 32970039}
   m_Layer: 5
-  m_Name: Rock
+  m_Name: Rock_P4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 853639139}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickRock
         m_Mode: 1
@@ -549,14 +549,14 @@ RectTransform:
   m_GameObject: {fileID: 64138334}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1068633088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -56}
+  m_AnchoredPosition: {x: 0, y: -107}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &64138336
@@ -606,8 +606,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 12
+  m_fontSizeBase: 12
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1083,7 +1083,7 @@ GameObject:
   - component: {fileID: 219744512}
   - component: {fileID: 219744511}
   m_Layer: 5
-  m_Name: Scissors
+  m_Name: Scissors_P2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1106,7 +1106,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 600, y: -375}
+  m_AnchoredPosition: {x: 600, y: -173}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &219744511
@@ -1153,7 +1153,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 535422331}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickScissors
         m_Mode: 1
@@ -1216,7 +1216,7 @@ GameObject:
   - component: {fileID: 223641296}
   - component: {fileID: 223641295}
   m_Layer: 5
-  m_Name: Scissors
+  m_Name: Scissors_P4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1286,7 +1286,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 853639139}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickScissors
         m_Mode: 1
@@ -1720,8 +1720,8 @@ MonoBehaviour:
   rps: {fileID: 1774780288}
   owner: {fileID: 1951980545}
   rockButton: {fileID: 929640865}
-  paperButton: {fileID: 1223148743}
-  scissorsButton: {fileID: 219744511}
+  paperButton: {fileID: 1981612385}
+  scissorsButton: {fileID: 1928067874}
 --- !u!1 &800833108
 GameObject:
   m_ObjectHideFlags: 0
@@ -1859,7 +1859,7 @@ GameObject:
   - component: {fileID: 802983982}
   - component: {fileID: 802983981}
   m_Layer: 5
-  m_Name: Rock
+  m_Name: Rock_P2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1882,7 +1882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -600, y: -375}
+  m_AnchoredPosition: {x: -600, y: -173}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &802983981
@@ -1929,7 +1929,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 535422331}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickRock
         m_Mode: 1
@@ -2306,7 +2306,7 @@ GameObject:
   - component: {fileID: 929640866}
   - component: {fileID: 929640865}
   m_Layer: 5
-  m_Name: Rock
+  m_Name: Rock_P1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2329,7 +2329,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -600, y: -375}
+  m_AnchoredPosition: {x: -600, y: -279}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &929640865
@@ -2376,7 +2376,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 759618790}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickRock
         m_Mode: 1
@@ -2439,7 +2439,7 @@ GameObject:
   - component: {fileID: 1009456365}
   - component: {fileID: 1009456364}
   m_Layer: 5
-  m_Name: Paper
+  m_Name: Paper_P3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2462,7 +2462,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -375}
+  m_AnchoredPosition: {x: 0, y: -62}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1009456364
@@ -2509,7 +2509,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741480094}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickPaper
         m_Mode: 1
@@ -2572,7 +2572,7 @@ GameObject:
   - component: {fileID: 1022073307}
   - component: {fileID: 1022073306}
   m_Layer: 5
-  m_Name: Scissors
+  m_Name: Scissors_P3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2595,7 +2595,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 600, y: -375}
+  m_AnchoredPosition: {x: 600, y: -62}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1022073306
@@ -2642,7 +2642,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741480094}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickScissors
         m_Mode: 1
@@ -3093,7 +3093,7 @@ GameObject:
   - component: {fileID: 1223148744}
   - component: {fileID: 1223148743}
   m_Layer: 5
-  m_Name: Paper
+  m_Name: Paper_P2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3116,7 +3116,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -375}
+  m_AnchoredPosition: {x: 0, y: -173}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1223148743
@@ -3163,7 +3163,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 535422331}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickPaper
         m_Mode: 1
@@ -3882,7 +3882,7 @@ MonoBehaviour:
   owner: {fileID: 800833109}
   rockButton: {fileID: 29923199}
   paperButton: {fileID: 1009456364}
-  scissorsButton: {fileID: 0}
+  scissorsButton: {fileID: 1022073306}
 --- !u!1 &1774780287
 GameObject:
   m_ObjectHideFlags: 0
@@ -3918,7 +3918,7 @@ MonoBehaviour:
   scoreUI: {fileID: 1774780291}
   logUI: {fileID: 1774780292}
   roundStartDelay: 2
-  attackDelay: 60
+  attackDelay: 2
   currentPlayer: {fileID: 0}
   isInputEnabled: 0
 --- !u!4 &1774780289
@@ -4113,7 +4113,7 @@ GameObject:
   - component: {fileID: 1928067875}
   - component: {fileID: 1928067874}
   m_Layer: 5
-  m_Name: Scissors
+  m_Name: Scissors_P1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4136,7 +4136,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 600, y: -375}
+  m_AnchoredPosition: {x: 600, y: -279}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1928067874
@@ -4183,7 +4183,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 759618790}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickScissors
         m_Mode: 1
@@ -4644,7 +4644,7 @@ GameObject:
   - component: {fileID: 1980844484}
   - component: {fileID: 1980844483}
   m_Layer: 5
-  m_Name: Paper
+  m_Name: Paper_P4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4714,7 +4714,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 853639139}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickPaper
         m_Mode: 1
@@ -4777,7 +4777,7 @@ GameObject:
   - component: {fileID: 1981612386}
   - component: {fileID: 1981612385}
   m_Layer: 5
-  m_Name: Paper
+  m_Name: Paper_P1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4800,7 +4800,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -375}
+  m_AnchoredPosition: {x: 0, y: -279}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1981612385
@@ -4847,7 +4847,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 759618790}
         m_TargetAssemblyTypeName: RPS_Input, Assembly-CSharp
         m_MethodName: OnClickPaper
         m_Mode: 1
