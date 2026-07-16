@@ -16,7 +16,7 @@ MonoBehaviour:
   maxSpawnInterval: 4.5
   minspawnCount: 1
   maxSpawnCount: 5
-  radius: 6
+  radius: 10
   minDistance: 2
   spawnerLifeTime: 2
   bulletSpawnDelay: 1.5
