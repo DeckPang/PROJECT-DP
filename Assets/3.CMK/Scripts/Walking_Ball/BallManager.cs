@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class BallManager : MonoBehaviour
@@ -9,6 +10,8 @@ public class BallManager : MonoBehaviour
 
     [SerializeField] private Ball_UI_Score ui_Score;
     [SerializeField] private Ball_timer ball_timer;
+    [SerializeField] private TMP_Text resultText;
+    [SerializeField] private TMP_Text GameOverText;
 
     private List<Ball_Player> players = new List<Ball_Player>();
     private List<Ball_Player> allplayers = new List<Ball_Player>();
@@ -62,6 +65,17 @@ public class BallManager : MonoBehaviour
 
                 ui_Score.BallUpdateUI(allplayers);
             }
+            else if(ball_timer.IsTimeUp && players.Count > 1)
+            {
+
+                if (resultText != null)
+                {
+                    GameOverText.gameObject.SetActive(true);
+                    GameOverText.text = "Game Over!";
+                }
+
+                roundEnded = true;
+            }
 
             // 1명만 남으면 즉시 승자 처리하고 라운드 종료
             if (players.Count == 1)
@@ -77,7 +91,6 @@ public class BallManager : MonoBehaviour
         if (roundEnded || !players.Contains(player)) return;
 
         players.Remove(player);
-        Debug.Log(player.name + " 탈락");
 
         if (players.Count == 1)
             EndRound(players[0]);
@@ -87,9 +100,15 @@ public class BallManager : MonoBehaviour
     {
         if (roundEnded) return;
         roundEnded = true;
-
         winner.AddScore(round_set.winnerBonus);
-        Debug.Log("우승자: " + winner.name + " (+100점)");
         ui_Score.BallUpdateUI(allplayers);
+
+        if (resultText != null)
+        {
+            resultText.gameObject.SetActive(true);
+            resultText.text = $"WINNER: {winner.name}";
+        }
     }
+
+
 }
