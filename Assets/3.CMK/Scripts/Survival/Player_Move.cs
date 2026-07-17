@@ -11,6 +11,7 @@ public class Player_Move : MonoBehaviour
     {
         gameOver = false;
         rb = GetComponent<Rigidbody>();
+        PlayerLifeManager.Instance.RegisterPlayer(gameObject);
     }
 
     void Update()
@@ -35,6 +36,7 @@ public class Player_Move : MonoBehaviour
 
             rb.AddForce(dir * data.knockbackForce, ForceMode.Impulse);
 
+            PlayerLifeManager.Instance.OnPlayerDied(gameObject);
             // 여기에 게임 오버 이벤트(UI 표시 등)를 추가하면 좋습니다.
             Debug.Log("Game Over!");
         }
