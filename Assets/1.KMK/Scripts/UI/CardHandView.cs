@@ -23,6 +23,11 @@ public class CardHandView : MonoBehaviour
 
     private readonly List<CardItemView> _items = new();
 
+    // 내가 InputAuthority를 가진 모든 NetworkPlayer.
+    // ParrelSync 멀티에서는 1명, Game 씬 단독 실행(DevAutoStart)에서는 4명 전부.
+    private readonly List<NetworkPlayer> _ownedPlayers = new();
+
+    // 현재 손패를 보여줄 활성 플레이어. 단독 실행 시 현재 턴 슬롯을 따라 바뀐다.
     private NetworkPlayer _localPlayer;
     private GameSession _session;
     private GameDeck _deck;
@@ -66,7 +71,7 @@ public class CardHandView : MonoBehaviour
         }
 
         if (_session != null)
-            _session.TurnChanged -= RefreshRuntimeOnly;
+            _session.TurnChanged -= OnTurnChanged;
 
         if (_deck != null)
             _deck.DeckChanged -= RefreshRuntimeOnly;
@@ -85,13 +90,14 @@ public class CardHandView : MonoBehaviour
     private void OnSessionReady(GameSession session)
     {
         if (_session != null)
-            _session.TurnChanged -= RefreshRuntimeOnly;
+            _session.TurnChanged -= OnTurnChanged;
 
         _session = session;
 
         if (_session != null)
-            _session.TurnChanged += RefreshRuntimeOnly;
+            _session.TurnChanged += OnTurnChanged;
 
+        UpdateActivePlayer();
         RefreshAll();
     }
 
@@ -108,22 +114,22 @@ public class CardHandView : MonoBehaviour
         RefreshAll();
     }
 
+    // 턴이 바뀌면 (내가 여러 명을 소유한 단독 실행 모드에서) 손패를 현재 턴 플레이어로 전환.
+    private void OnTurnChanged()
+    {
+        UpdateActivePlayer();
+        RefreshAll();
+    }
+
     private void OnPlayerSpawned(NetworkPlayer player)
     {
         if (player == null || !player.HasInputAuthority)
             return;
 
-        if (_localPlayer == player)
-            return;
+        if (!_ownedPlayers.Contains(player))
+            _ownedPlayers.Add(player);
 
-        UnbindLocalPlayer();
-
-        _localPlayer = player;
-        _localPlayer.HandChanged += RefreshAll;
-        _localPlayer.BranchStateChanged += RefreshRuntimeOnly;
-        _localPlayer.PositionChanged += RefreshRuntimeOnly;
-
-        RefreshAll();
+        UpdateActivePlayer();
     }
 
     private void OnPlayerDespawned(NetworkPlayer player)
@@ -131,11 +137,65 @@ public class CardHandView : MonoBehaviour
         if (player == null)
             return;
 
+        _ownedPlayers.Remove(player);
+
         if (_localPlayer == player)
-        {
             UnbindLocalPlayer();
-            RefreshAll();
+
+        UpdateActivePlayer();
+        RefreshAll();
+    }
+
+    // 내가 소유한 플레이어들 중 손패를 보여줄 대상을 고른다.
+    //  1) 현재 턴 슬롯인 내 소유 플레이어 우선 (단독 실행 시 턴 따라 전환)
+    //  2) 없으면 기존 활성 플레이어 유지 (실제 멀티에서 내 턴이 아닐 때 내 손패 계속 표시)
+    //  3) 그것도 없으면 첫 소유 플레이어
+    private NetworkPlayer PickActivePlayer()
+    {
+        if (_session != null)
+        {
+            foreach (var p in _ownedPlayers)
+            {
+                if (p != null && p.SlotIndex == _session.CurrentTurnSlot)
+                    return p;
+            }
         }
+
+        if (_localPlayer != null && _ownedPlayers.Contains(_localPlayer))
+            return _localPlayer;
+
+        foreach (var p in _ownedPlayers)
+        {
+            if (p != null)
+                return p;
+        }
+
+        return null;
+    }
+
+    private void UpdateActivePlayer()
+    {
+        NetworkPlayer next = PickActivePlayer();
+        if (next == _localPlayer)
+            return;
+
+        BindLocalPlayer(next);
+    }
+
+    private void BindLocalPlayer(NetworkPlayer player)
+    {
+        UnbindLocalPlayer();
+
+        _localPlayer = player;
+
+        if (_localPlayer != null)
+        {
+            _localPlayer.HandChanged += RefreshAll;
+            _localPlayer.BranchStateChanged += RefreshRuntimeOnly;
+            _localPlayer.PositionChanged += RefreshRuntimeOnly;
+        }
+
+        RefreshAll();
     }
 
     private void UnbindLocalPlayer()
@@ -156,7 +216,7 @@ public class CardHandView : MonoBehaviour
         RefreshGuideText();
 
         if (detailText != null && string.IsNullOrWhiteSpace(detailText.text))
-            detailText.text = "ī�带 �����ϼ���.";
+            detailText.text = "카드를 선택하세요.";
     }
 
     public void RefreshRuntimeOnly()
@@ -252,20 +312,20 @@ public class CardHandView : MonoBehaviour
         if (def == null)
         {
             detailText.text = handIndex == NetworkPlayer.FixedHandIndex
-                ? "0�� ���� (���� ����)"
-                : $"���� {handIndex} (�� ����)";
+                ? "0번 슬롯 (고정 슬롯)"
+                : $"슬롯 {handIndex} (빈 슬롯)";
             return;
         }
 
-        string slotLabel = handIndex == NetworkPlayer.FixedHandIndex ? "���� ����" : $"���� {handIndex}";
+        string slotLabel = handIndex == NetworkPlayer.FixedHandIndex ? "고정 슬롯" : $"슬롯 {handIndex}";
         detailText.text =
             $"{slotLabel}\n" +
-            $"�̸�: {def.CardName}\n" +
-            $"�ڽ�Ʈ: {def.Cost}\n" +
-            $"Ÿ��: {def.CardType}\n" +
-            $"����: {def.CardPoolType}\n" +
-            $"ȿ��: {def.EffectType}\n" +
-            $"����: {def.Description}";
+            $"이름: {def.CardName}\n" +
+            $"코스트: {def.Cost}\n" +
+            $"타입: {def.CardType}\n" +
+            $"공급: {def.CardPoolType}\n" +
+            $"효과: {def.EffectType}\n" +
+            $"설명: {def.Description}";
     }
 
     private void RefreshDeckText()
@@ -289,34 +349,34 @@ public class CardHandView : MonoBehaviour
 
         if (_localPlayer == null)
         {
-            dragGuideText.text = "���� �÷��̾� ��� ��...";
+            dragGuideText.text = "로컬 플레이어 대기 중...";
             return;
         }
 
         if (_session == null)
         {
-            dragGuideText.text = "���� ��� ��...";
+            dragGuideText.text = "세션 대기 중...";
             return;
         }
 
         if (_session.CurrentTurnSlot != _localPlayer.SlotIndex)
         {
-            dragGuideText.text = "��� ���Դϴ�.";
+            dragGuideText.text = "상대 턴입니다.";
             return;
         }
 
         if (_localPlayer.IsAwaitingBranch)
         {
-            dragGuideText.text = "������ ���� �߿��� ī�� ��� �Ұ�";
+            dragGuideText.text = "갈림길 선택 중에는 카드 사용 불가";
             return;
         }
 
         if (_localPlayer.PendingSteps > 0)
         {
-            dragGuideText.text = "�̵� ��...";
+            dragGuideText.text = "이동 중...";
             return;
         }
 
-        dragGuideText.text = $"ī�带 ���� {useThresholdY:0}px �̻� �巡���ϸ� ���";
+        dragGuideText.text = $"카드를 위로 {useThresholdY:0}px 이상 드래그하면 사용";
     }
 }

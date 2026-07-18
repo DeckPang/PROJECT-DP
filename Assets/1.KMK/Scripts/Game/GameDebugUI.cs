@@ -54,7 +54,18 @@ public class GameDebugUI : MonoBehaviour
         NetworkPlayer.OnSpawnedStatic   += OnPlayerSpawned;
         NetworkPlayer.OnDespawnedStatic += OnPlayerDespawned;
 
+        // 미니게임에서 복귀한 NetworkPlayer는 다시 Spawn되지 않으므로 직접 수집합니다.
+        foreach (var player in FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None))
+            OnPlayerSpawned(player);
+
         UpdateUI();
+    }
+
+    private void Update()
+    {
+        // 턴 타이머 카운트다운은 이벤트만으론 갱신 안 되므로 매 프레임 갱신 (디버그 UI).
+        if (IsSessionValid() && _session.WinnerSlot < 0)
+            UpdateUI();
     }
 
     private void OnDestroy()
@@ -74,6 +85,8 @@ public class GameDebugUI : MonoBehaviour
             if (p == null) continue;
             p.PositionChanged -= UpdateUI;
             p.HandChanged     -= UpdateUI;
+            p.TrophiesChanged -= UpdateUI;
+            p.CoinsChanged    -= UpdateUI;
         }
     }
 
@@ -83,16 +96,22 @@ public class GameDebugUI : MonoBehaviour
     {
         UnbindSession();
         _session = session;
-        _session.TurnChanged += UpdateUI;
+        _session.TurnChanged      += UpdateUI;
+        _session.GameEnded        += OnGameEnded;
+        _session.TrophyNodeChanged += UpdateUI;
         UpdateUI();
     }
 
     private void UnbindSession()
     {
         if (_session == null) return;
-        _session.TurnChanged -= UpdateUI;
+        _session.TurnChanged      -= UpdateUI;
+        _session.GameEnded        -= OnGameEnded;
+        _session.TrophyNodeChanged -= UpdateUI;
         _session = null;
     }
+
+    private void OnGameEnded(int winnerSlot) => UpdateUI();
 
     private void OnDeckReady(GameDeck deck)
     {
@@ -117,6 +136,8 @@ public class GameDebugUI : MonoBehaviour
         _players.Add(player);
         player.PositionChanged += UpdateUI;
         player.HandChanged     += UpdateUI;
+        player.TrophiesChanged += UpdateUI;
+        player.CoinsChanged    += UpdateUI;
         UpdateUI();
     }
 
@@ -125,6 +146,8 @@ public class GameDebugUI : MonoBehaviour
         if (player == null) return;
         player.PositionChanged -= UpdateUI;
         player.HandChanged     -= UpdateUI;
+        player.TrophiesChanged -= UpdateUI;
+        player.CoinsChanged    -= UpdateUI;
         _players.Remove(player);
         UpdateUI();
     }
@@ -134,19 +157,25 @@ public class GameDebugUI : MonoBehaviour
     private void UpdateUI()
     {
         bool sessionValid = IsSessionValid();
+        bool gameOver     = sessionValid && _session.WinnerSlot >= 0;
 
         // 턴 정보
         if (currentTurnText != null)
         {
-            currentTurnText.text = sessionValid
-                ? $"Turn {_session.TurnNumber} — Slot {_session.CurrentTurnSlot}"
-                : "GameSession 대기 중...";
+            if (!sessionValid)
+                currentTurnText.text = "GameSession 대기 중...";
+            else if (gameOver)
+                currentTurnText.text = $"게임 종료! 🏆 승자 = Slot {_session.WinnerSlot}";
+            else
+                currentTurnText.text = $"라운드 {_session.RoundNumber} · Turn {_session.TurnNumber} — Slot {_session.CurrentTurnSlot} · ⏱{_session.TurnSecondsRemaining:0.0}s";
         }
 
         // 플레이어 리스트 (+ 손패)
         if (playersListText != null)
         {
             var sb = new StringBuilder();
+            if (sessionValid)
+                sb.AppendLine($"🏆 트로피 노드: Node {_session.TrophyNodeId} (가격 {GameSession.TrophyPrice}💰)");
             for (int slot = 0; slot < 4; slot++)
             {
                 var p = FindBySlot(slot);
@@ -157,7 +186,7 @@ public class GameDebugUI : MonoBehaviour
                 else
                 {
                     string marker = (sessionValid && _session.CurrentTurnSlot == slot) ? " ◀ 차례" : "";
-                    sb.AppendLine($"Slot {slot}: {p.PlayerName} | Node {p.CurrentNodeId}{marker}");
+                    sb.AppendLine($"Slot {slot}: {p.PlayerName} | Node {p.CurrentNodeId} | 🏆{p.Trophies} 💰{p.Coins}{marker}");
                     sb.AppendLine($"   ✋ {FormatHand(p)}");
                 }
             }
@@ -172,9 +201,9 @@ public class GameDebugUI : MonoBehaviour
                 : "Deck 대기 중...";
         }
 
-        if (endTurnButton  != null) endTurnButton .interactable = sessionValid;
-        if (moveOneButton  != null) moveOneButton .interactable = CanLocalPlayerMove();
-        if (drawCardButton != null) drawCardButton.interactable = CanLocalPlayerDraw();
+        if (endTurnButton  != null) endTurnButton .interactable = sessionValid && !gameOver;
+        if (moveOneButton  != null) moveOneButton .interactable = !gameOver && CanLocalPlayerMove();
+        if (drawCardButton != null) drawCardButton.interactable = !gameOver && CanLocalPlayerDraw();
     }
 
     private static string FormatHand(NetworkPlayer p)
