@@ -23,6 +23,9 @@ public class PlayerPawnView : MonoBehaviour
     [SerializeField] private Color[] slotColors = {
         Color.red, Color.blue, Color.green, Color.yellow
     };
+    //카메라 필드 추가했음 -여영부
+    [Header("Camera")]
+    [SerializeField] private Transform cameraTarget;
 
     // ── 정적 레지스트리 (같은 노드 폰 검색용) ──────────────────
     private static readonly List<PlayerPawnView> _all = new();
@@ -31,6 +34,13 @@ public class PlayerPawnView : MonoBehaviour
     private BoardManager  _boardMgr;
     private Coroutine     _activeMove;
     private int           _lastNodeId = -1;
+
+    //프로퍼티도 추가 -여영부
+    public int SlotIndex =>
+    _networkPlayer != null ? _networkPlayer.SlotIndex : -1;
+
+    public Transform CameraTarget =>
+        cameraTarget != null ? cameraTarget : transform;
 
     // ── 초기화/해제 ───────────────────────────────────────────────
 
