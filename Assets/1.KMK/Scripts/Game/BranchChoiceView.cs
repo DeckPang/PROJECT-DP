@@ -20,6 +20,18 @@ public class BranchChoiceView : MonoBehaviour
     private readonly List<Button>        _activeButtons = new();
     private NetworkPlayer _activePlayer;
 
+    //스크립트가 캐릭터 생성보다 늦게 활성화되서 플레이어 못잡는거같아서 추가함. -여영부
+    private void Start()
+    {
+        foreach (var player in FindObjectsByType<NetworkPlayer>(
+                     FindObjectsSortMode.None))
+        {
+            HandlePlayerSpawned(player);
+        }
+
+        OnAnyBranchStateChanged();
+    }
+
     // ── 생명주기 ────────────────────────────────────────────────────
 
     private void OnEnable()
@@ -118,7 +130,17 @@ public class BranchChoiceView : MonoBehaviour
             btn.gameObject.SetActive(true);
 
             var label = btn.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null) label.text = $"길 {i + 1} → Node {nextNode.NodeId}";
+            if (label != null)
+            {
+                string routeName = i switch
+                {
+                    0 => "안쪽길",
+                    1 => "바깥길",
+                    _ => $"길 {i + 1}"
+                };
+
+                label.text = $"{routeName}\nNode {nextNode.NodeId}";
+            }
 
             btn.onClick.AddListener(() => OnChooseBranch(idx));
             _activeButtons.Add(btn);

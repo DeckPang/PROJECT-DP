@@ -68,4 +68,18 @@ public class PawnSpawner : MonoBehaviour
 
         Debug.Log($"[PawnSpawner] PawnView 제거: Slot {player.SlotIndex}");
     }
+
+    //카메라가 PawnView 찾을 수 있게 함수추가 -여영부
+    public PlayerPawnView GetPawnBySlot(int slotIndex)
+    {
+        foreach (var pair in _pawns)
+        {
+            PlayerPawnView view = pair.Value;
+
+            if (view != null && view.SlotIndex == slotIndex)
+                return view;
+        }
+
+        return null;
+    }
 }
