@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEditor.Build;
 using UnityEditorInternal;
 using UnityEngine;
@@ -8,13 +9,9 @@ public class Ball_Player : MonoBehaviour
 {
     [Header("Player Force")]
     [SerializeField]
-    private float force = 1.0f;
+    private BallPhysicsSettings settings;
+
     private float distance;
-    private float stop_p = 0.025f;
-    private float friction = 0.05f;
-    private float maxDistance = 15.0f;
-
-
     public int order;
     public int score;
 
@@ -55,13 +52,13 @@ public class Ball_Player : MonoBehaviour
         float speed = horizontalVel.magnitude;
         if (speed > 0.0f)
         {
-            if (speed < stop_p)
+            if (speed < settings.stop_p)
             {
                 rb.linearVelocity = new Vector3(0f, vel.y, 0f);
             }
             else
             {
-                float decel = friction * Mathf.Abs(Physics.gravity.y);
+                float decel = settings.friction * Mathf.Abs(Physics.gravity.y);
                 Vector3 FrictionForce = -horizontalVel * decel * rb.mass;
                 rb.AddForce(FrictionForce);
             }
@@ -80,6 +77,7 @@ public class Ball_Player : MonoBehaviour
 
     void DragBall()
     {
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -89,16 +87,11 @@ public class Ball_Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) // È¦µå ÁßÀÏ ¶§
         {
-
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == this.gameObject)
             {
-                if (hit.collider.gameObject == this.gameObject)
-                {
-                    isDragging = true;
-                }
-
+                isDragging = true;
+                rend.material = outlineMaterial;
             }
-            rend.material = outlineMaterial;
         }
 
         if (!isDragging) // È¦µå ÁßÀÌ ¾Æ´Ò ¶§
@@ -142,11 +135,11 @@ public class Ball_Player : MonoBehaviour
 
                 dir.y = 0.0f;
 
-                dir = Vector3.ClampMagnitude(dir, maxDistance);
+                dir = Vector3.ClampMagnitude(dir, settings.maxDistance);
 
                 rb.linearVelocity = Vector3.zero;
 
-                rb.AddForce(dir * force, ForceMode.Impulse);
+                rb.AddForce(dir * settings.force, ForceMode.Impulse);
 
                 isDragging = false;
 

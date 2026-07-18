@@ -9,14 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ce1f4f9193b5764889f1110cf30cbda, type: 3}
-  m_Name: SpawnData
+  m_Script: {fileID: 11500000, guid: d9cfdcc42471e974fa9832809f860293, type: 3}
+  m_Name: KeyWordSettings
   m_EditorClassIdentifier: 
-  minSpawnInterval: 2.5
-  maxSpawnInterval: 4.5
-  minspawnCount: 1
-  maxSpawnCount: 5
-  radius: 6
-  minDistance: 2
-  spawnerLifeTime: 2
-  bulletSpawnDelay: 1.5
+  moveDistance: 1
+  Spacing: 100
+  StartCount: 4
+  TotalCount: 20

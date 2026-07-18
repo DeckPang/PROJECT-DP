@@ -4,18 +4,17 @@ using TMPro;
 
 public class KeyWord : MonoBehaviour
 {
+
+    [SerializeField]
+    private KeyWordSettings setting;
+
     [Header("Player")]
     public Transform player;            //Player 위치
-    public float moveDistance = 1.0f;   //Player의 이동거리
 
     [Header("UI")]
     public GameObject KeyWordPrefabs;   //화면에 나타날 단어 UI 
     public Transform uiDistance;        //기준 위치
-    public float Spacing = 100.0f;      //UI 간격
 
-    [Header("Setting")]
-    public int StartCount = 4;
-    public int TotalCount = 20;
 
     public int CurrentCount = 0;
     private int index = 0;
@@ -27,7 +26,7 @@ public class KeyWord : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        for (int i = 0; i < StartCount; i++)
+        for (int i = 0; i < setting.StartCount; i++)
         {
             AddKey();
         }
@@ -46,11 +45,11 @@ public class KeyWord : MonoBehaviour
             MoveForward();
 
             CurrentCount++;
-            if (CurrentCount + StartCount <= TotalCount)
+            if (CurrentCount + setting.StartCount <= setting.TotalCount)
             {
                 AddKey();
             }
-            else if (CurrentCount >= TotalCount)
+            else if (CurrentCount >= setting.TotalCount)
             {
                 Debug.Log("Win");
             }
@@ -69,7 +68,7 @@ public class KeyWord : MonoBehaviour
         obj.transform.SetParent(uiDistance, false);
         obj.GetComponent<TMP_Text>().text = new_key.ToString();       // 어떤 글자인지 가져오기
 
-        obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(index * Spacing, 0);
+        obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(index * setting.Spacing, 0);
 
         index++;
 
@@ -88,7 +87,7 @@ public class KeyWord : MonoBehaviour
 
     void MoveForward()
     {
-        player.position += Vector3.right * moveDistance;
+        player.position += Vector3.right * setting.moveDistance;
     }
 
 }

@@ -18,6 +18,7 @@ public class SpawnerManager : MonoBehaviour
     void Update()
     {
         if (timer.IsTimeOver) return; //  시간 끝나면 종료
+        if (PlayerLifeManager.Instance != null && PlayerLifeManager.Instance.AllPlayersDead) return; // 모든 플레이어가 죽으면 종료
 
         timerLocal += Time.deltaTime;
 
@@ -48,6 +49,7 @@ public class SpawnerManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             if (timer.IsTimeOver) yield break;
+            if (PlayerLifeManager.Instance != null && PlayerLifeManager.Instance.AllPlayersDead) yield break;
 
             SpawnSpawner();
             yield return new WaitForSeconds(0.3f);
